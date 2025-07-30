@@ -398,7 +398,7 @@ exports.handler = async (event, context) => {
       
       const msg = {
         to: datos.correo,
-        from: 'cotizaciones@prefabricadaspremium.cl',
+        from: 'cotizacion@prefabricadaspremium.cl',
         subject: `Cotización #${numeroCotizacion} - ${datos.modelo} - Prefabricadas Premium`,
         html: emailHTML
       };
