@@ -5,14 +5,14 @@
 const vendedores = [
   {
     id: 1,
-    nombre: "Juan Pérez Sánchez",
-    telefono: "56912345678", // Formato: 56 + número sin espacios
-    email: "juan.perez@prefabricadaspremium.cl",
-    codigo: "JUAN2024",
+    nombre: "Veronica Carmona",
+    telefono: "56993134696", // Formato: 56 + número sin espacios
+    email: "veroc.aldunate@gmail.com",
+    codigo: "VERO2025",
     activo: true,
     region: "Coquimbo",
     ciudad: "La Serena",
-    fecha_registro: "2024-01-15"
+    fecha_registro: "2025-07-30"
   },
 
   // Agregar más vendedores según necesidad
