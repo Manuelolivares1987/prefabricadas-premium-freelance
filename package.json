@@ -1,0 +1,28 @@
+{
+  "name": "prefabricadas-premium-freelance",
+  "version": "1.0.0",
+  "description": "Plataforma de cotización para vendedores freelance de Prefabricadas Premium",
+  "main": "index.js",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Build complete - static site'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "casas-prefabricadas",
+    "cotizador",
+    "vendedores-freelance",
+    "netlify-functions"
+  ],
+  "author": "Prefabricadas Premium",
+  "license": "MIT",
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

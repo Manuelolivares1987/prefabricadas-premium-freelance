@@ -1,0 +1,47 @@
+[build]
+  # Directorio de archivos estáticos
+  publish = "."
+  
+  # Comando de build (no necesario para sitio estático)
+  command = "echo 'Build complete'"
+
+[functions]
+  # Directorio de funciones de Netlify
+  directory = "netlify/functions"
+  
+  # Configuración de runtime para las funciones
+  node_bundler = "esbuild"
+
+# Redirecciones y configuración de headers
+[[headers]]
+  # Para todos los archivos
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  # Para las funciones de API
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+
+# Configuración de redirects (opcional)
+[[redirects]]
+  # Redirect para vendedores sin código específico
+  from = "/vendedor"
+  to = "/vendedores.html"
+  status = 301
+
+[[redirects]]
+  # Redirect para el panel
+  from = "/panel"
+  to = "/vendedores.html"
+  status = 301
+
+# Variables de entorno que necesitarás configurar en Netlify:
+# SENDGRID_API_KEY - Tu API key de SendGrid para envío de emails

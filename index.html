@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prefabricadas Premium - Casas de Calidad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* COLORES ACTUALIZADOS PARA PREFABRICADAS PREMIUM */
+
+/* Variables de color de la marca */
+:root {
+  --color-primario: #8B5A3C;      /* Marrón oscuro del logo */
+  --color-secundario: #A67C52;     /* Marrón medio del logo */
+  --color-acento: #D4B896;         /* Dorado/beige del logo */
+  --color-texto: #2C1810;          /* Marrón muy oscuro para texto */
+  --color-exito: #28a745;          /* Verde para acciones positivas */
+  --color-fondo: #FAFAF8;          /* Blanco crema suave */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+header {
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+  padding: 20px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 2px 10px rgba(139, 90, 60, 0.3);
+}
+
+header img {
+  max-height: 80px;
+  margin-bottom: 10px;
+}
+
+.hero-text {
+  margin-top: 15px;
+}
+
+.hero-text h1 {
+  font-size: 2.2em;
+  font-weight: 300;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.hero-text p {
+  font-size: 1.1em;
+  opacity: 0.9;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* NUEVO: Mensaje del vendedor */
+.vendedor-banner {
+  background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%);
+  border-left: 4px solid var(--color-primario);
+  padding: 15px 20px;
+  margin: 0;
+  text-align: center;
+  display: none;
+  animation: slideDown 0.5s ease-out;
+}
+
+.vendedor-banner.show {
+  display: block;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vendedor-banner h3 {
+  color: var(--color-primario);
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.vendedor-banner p {
+  color: var(--color-texto);
+  font-size: 1em;
+  margin: 0;
+}
+
+.video-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background: white;
+}
+
+video {
+  max-width: 90%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(139, 90, 60, 0.15);
+}
+
+.catalogo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  padding: 60px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.modelo {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(139, 90, 60, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.modelo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(139, 90, 60, 0.2);
+}
+
+.modelo img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.modelo-content {
+  padding: 25px;
+}
+
+.modelo h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: var(--color-primario);
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.modelo-specs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.spec {
+  background: var(--color-acento);
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--color-primario);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.m2-total {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--color-secundario);
+  margin: 8px 0;
+  text-align: center;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.precio {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--color-exito);
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.modelo-actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(139, 90, 60, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primario);
+  border: 2px solid var(--color-primario);
+}
+
+.btn-secondary:hover {
+  background: var(--color-primario);
+  color: white;
+}
+
+/* Formulario mejorado con colores de marca */
+.form-section {
+  background: linear-gradient(135deg, var(--color-acento) 0%, #F5F3F0 100%);
+  padding: 60px 20px;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(139, 90, 60, 0.15);
+  overflow: hidden;
+}
+
+.form-header {
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.form-header h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  font-weight: 300;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form-header p {
+  opacity: 0.9;
+  font-size: 1.1em;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* NUEVO: Info del vendedor en el header del formulario */
+.vendedor-form-info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  display: none;
+}
+
+.vendedor-form-info.show {
+  display: block;
+}
+
+.form-content {
+  padding: 40px 30px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--color-texto);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.1);
+}
+
+.financiamiento-extra {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+  border-left: 4px solid var(--color-primario);
+  display: none;
+}
+
+.form-submit {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, var(--color-exito) 0%, #20c997 100%);
+  color: white;
+  padding: 18px 50px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+.btn-submit:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* NUEVO: Estilo especial para botón con vendedor */
+.btn-submit.con-vendedor {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-submit.con-vendedor:hover {
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+}
+
+.vendedor-info-btn {
+  font-size: 0.9em;
+  opacity: 0.9;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Loading y mensajes */
+.loading {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--color-primario);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mensaje {
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: none;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.mensaje.exito {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.mensaje.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+/* Financiamiento con colores de marca */
+.financiamiento {
+  text-align: center;
+  margin-top: 60px;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, var(--color-acento) 0%, #F5F3F0 100%);
+}
+
+.financiamiento h3 {
+  color: var(--color-primario);
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.financiamiento img {
+  max-height: 80px;
+  margin-top: 20px;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(44, 24, 16, 0.7);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 2% auto;
+  padding: 0;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--color-exito) 0%, #20c997 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-header h2 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.modal-body {
+  padding: 30px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.whatsapp-btn {
+  display: inline-block;
+  background: #25D366;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 20px auto;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.whatsapp-btn:hover {
+  background: #128C7E;
+  transform: scale(1.05);
+}
+
+/* Estilos para las opciones de precios en el modal */
+.precio-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.precio-option {
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.precio-option.premium {
+  border-color: #28a745;
+  background: #e8f5e8;
+  position: relative;
+}
+
+.precio-option.premium::before {
+  content: '⭐ MÁS POPULAR';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #28a745;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+.precio-option h4 {
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}
+
+.precio-option .precio-valor {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #28a745;
+  margin: 10px 0;
+}
+
+.precio-option .precio-subtitulo {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .catalogo {
+    grid-template-columns: 1fr;
+    padding: 40px 15px;
+  }
+
+  .form-content {
+    padding: 30px 20px;
+  }
+
+  .form-header {
+    padding: 30px 20px;
+  }
+
+  .form-header h2 {
+    font-size: 1.6em;
+  }
+
+  .hero-text h1 {
+    font-size: 1.8em;
+  }
+
+  .modelo-actions {
+    flex-direction: column;
+  }
+
+  .precio-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Asegurar que todos los textos usen Montserrat */
+h1, h2, h3, h4, h5, h6, p, span, div, label, input, select, textarea, button {
+  font-family: 'Montserrat', sans-serif !important;
+}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <img src="logo_premium/1. BLANCO.png" alt="Prefabricadas Premium">
+      <div class="hero-text">
+        <h1>Prefabricadas Premium</h1>
+        <p>Tu casa soñada, construida con la más alta calidad y eficiencia energética</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- NUEVO: Banner del vendedor -->
+  <div id="vendedor-banner" class="vendedor-banner">
+    <h3 id="vendedor-nombre">¡Hola! Soy tu asesor personal</h3>
+    <p id="vendedor-mensaje">Te voy a ayudar con tu cotización de casa prefabricada</p>
+  </div>
+
+  <div class="video-container">
+    <video controls autoplay muted>
+      <source src="videos/video.mp4" type="video/mp4">
+      Tu navegador no soporta la reproducción de video.
+    </video>
+  </div>
+
+  <section class="catalogo" id="catalogo">
+    <!-- Modelos se cargarán aquí dinámicamente -->
+  </section>
+
+  <section class="form-section">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Solicitar Cotización</h2>
+        <p>Recibe una cotización personalizada en minutos</p>
+        
+        <!-- NUEVO: Info del vendedor en el formulario -->
+        <div id="vendedor-form-info" class="vendedor-form-info">
+          <p>👤 Tu asesor: <strong id="vendedor-form-nombre"></strong></p>
+        </div>
+      </div>
+      
+      <div class="form-content">
+        <form id="formulario-cotizacion">
+          <div class="form-group">
+            <label for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" required>
+          </div>
+
+          <div class="form-group">
+            <label for="modelo">Modelo seleccionado *</label>
+            <input type="text" id="modelo" readonly required>
+          </div>
+
+          <div class="form-group">
+            <label for="correo">Correo electrónico *</label>
+            <input type="email" id="correo" required>
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">Teléfono *</label>
+            <input type="tel" id="telefono" required>
+          </div>
+
+          <div class="form-group">
+            <label for="habitaciones">Número de habitaciones que necesita *</label>
+            <input type="number" id="habitaciones" min="1" max="10" required>
+          </div>
+
+          <div class="form-group">
+            <label for="sucursal">Sucursal más cercana *</label>
+            <select id="sucursal" required>
+              <option value="">Seleccione una sucursal</option>
+              <option value="Copiapó">Copiapó</option>
+              <option value="La Serena">La Serena</option>
+              <option value="Casablanca">Casablanca</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="financia">¿Te gustaría financiar tu casa? *</label>
+            <select id="financia" onchange="toggleFinanciamiento(this.value)" required>
+              <option value="">Seleccione una opción</option>
+              <option value="no">No, pago de contado</option>
+              <option value="si">Sí, me interesa el financiamiento</option>
+            </select>
+          </div>
+
+          <div id="financiamiento-extra" class="financiamiento-extra">
+            <div class="form-group">
+              <label for="monto">Monto que te gustaría financiar</label>
+              <input type="number" id="monto" max="18000000" placeholder="Ej: 15000000">
+              <small style="color: #666;">Máximo $18.000.000</small>
+            </div>
+            <div class="form-group">
+              <label for="rut">RUT (para evaluación crediticia)</label>
+              <input type="text" id="rut" placeholder="12.345.678-9">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="comentario">Comentarios adicionales</label>
+            <textarea id="comentario" rows="4" placeholder="Cuéntanos sobre tus necesidades específicas, ubicación del terreno, fechas importantes, etc."></textarea>
+          </div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn-submit" id="btn-enviar">
+              Solicitar Cotización Gratuita
+              <span id="vendedor-info-btn" class="vendedor-info-btn" style="display: none;"></span>
+            </button>
+            
+            <div class="loading" id="loading">
+              <div class="spinner"></div>
+              <p>Generando tu cotización personalizada...</p>
+            </div>
+
+            <div class="mensaje" id="mensaje"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="financiamiento">
+    <h3>Financia hasta en 60 cuotas</h3>
+    <p style="font-size: 1.1em; margin-bottom: 20px;">
+      Trabajamos con los principales bancos del país para ofrecerte las mejores condiciones
+    </p>
+    <p><small>(Sujeto a evaluación crediticia)</small></p>
+    <img src="logo_salvum/Logo Salvum 2025_GRAPHS (1).png" alt="Salvum">
+  </section>
+
+  <!-- Modal para mostrar cotización -->
+  <div id="modal-cotizacion" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>¡Tu Cotización Está Lista! 🎉</h2>
+        <p>Hemos generado una cotización personalizada para ti</p>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Contenido de la cotización se insertará aquí -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // SISTEMA DE COTIZACIÓN FREELANCE v1.0
+    // ==========================================
+    
+    console.log('🚀 Iniciando sistema Prefabricadas Premium FREELANCE...');
+    
+    // NUEVO: Sistema de vendedores freelance
+    let vendedorActual = null;
+    
+    // Configuración global (igual que original)
+    let valorUF = 37500;
+    let fechaUF = new Date().toLocaleDateString('es-CL');
+
+    // Datos de modelos (EXACTO IGUAL AL ORIGINAL)
+    const modelos = {
+      'Milán': {
+        m2_utiles: 230,
+        m2_terraza: 81,
+        entrepiso: 84,
+        logia: 0,
+        imagen: 'modelos/milan.jpg',
+        dormitorios: 5,
+        baños: 4,
+        pdf: 'pdfs/milan.pdf',
+        descripcion: 'Casa familiar de gran tamaño con espacios amplios y distribución premium'
+      },
+      'Marbella': {
+        m2_utiles: 139,
+        m2_terraza: 50,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/marbella.jpg',
+        dormitorios: 4,
+        baños: 2,
+        pdf: 'pdfs/marbella.pdf',
+        descripcion: 'Diseño moderno de 4 dormitorios con amplia terraza'
+      },
+      'Praga': {
+        m2_utiles: 180,
+        m2_terraza: 18,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/praga.jpg',
+        dormitorios: 4,
+        baños: 3,
+        pdf: 'pdfs/praga.pdf',
+        descripcion: 'Casa de 4 dormitorios con distribución eficiente'
+      },
+      'Barcelona': {
+        m2_utiles: 150,
+        m2_terraza: 9,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/barcelona.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/barcelona.pdf',
+        descripcion: 'Casa mediterránea de 3 dormitorios con estilo clásico'
+      },
+      'Málaga': {
+        m2_utiles: 139,
+        m2_terraza: 25,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/malaga.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/malaga.pdf',
+        descripcion: 'Diseño compacto y funcional con terraza integrada'
+      },
+      'Capri': {
+        m2_utiles: 92,
+        m2_terraza: 36,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/capri.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/capri.pdf',
+        descripcion: 'Casa acogedora con terraza generosa para la vida al aire libre'
+      },
+      'Cádiz': {
+        m2_utiles: 114,
+        m2_terraza: 11,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/cadiz.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/cadiz.pdf',
+        descripcion: 'Casa de tamaño medio con distribución práctica y funcional'
+      },
+      'Toscana': {
+        m2_utiles: 72,
+        m2_terraza: 0,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/toscana.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/toscana.pdf',
+        descripcion: 'Casa starter perfecta para comenzar, diseño compacto e inteligente'
+      },
+      'Mónaco': {
+        m2_utiles: 132,
+        m2_terraza: 15,
+        entrepiso: 36,
+        logia: 7,
+        imagen: 'modelos/monaco.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/monaco.pdf',
+        descripcion: 'Casa de 2 pisos con espacios diferenciados y logia privada'
+      },
+      'Eclipse': {
+        m2_utiles: 86,
+        m2_terraza: 0,
+        entrepiso: 36,
+        logia: 0,
+        imagen: 'modelos/eclipse.jpg',
+        dormitorios: 3,
+        baños: 2,
+        pdf: 'pdfs/eclipse.pdf',
+        descripcion: 'Diseño moderno de 2 pisos compacto y eficiente'
+      },
+      'Amalfitano': {
+        m2_utiles: 230,
+        m2_terraza: 71,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/amalfitano.jpg',
+        dormitorios: 4,
+        baños: 3,
+        pdf: 'pdfs/amalfitano.pdf',
+        descripcion: 'Casa premium de gran tamaño en un piso con diseño mediterráneo'
+      },
+      'Santorini': {
+       m2_utiles: 120,
+       m2_terraza: 0,
+       entrepiso: 0,
+       logia: 3,
+       imagen: 'modelos/santorini.jpg',
+       dormitorios: 4,
+       baños: 3,
+       pdf: 'pdfs/santorini.pdf',
+       descripcion: 'Arquitectura contemporánea de 4 dormitorios y 3 baños que combina elegancia, amplitud y confort familiar en cada detalle',
+       precio_fijo: {
+       modalidad: 'SIP_VOLCANBOARD',
+       precio_clp: 19990000,
+       precio_uf: 533.07
+       }
+      },
+       'Santorini Base': {
+        m2_utiles: 74,
+        m2_terraza: 0,
+        entrepiso: 0,
+        logia: 0,
+        imagen: 'modelos/santorini-base.jpg',
+        dormitorios: 2,
+        baños: 1,
+        pdf: 'pdfs/santorini-base.pdf',
+        descripcion: 'Diseño moderno y luminoso de 2 dormitorios y 1 baño, ideal para quienes buscan estilo y funcionalidad en espacios compactos',
+        precio_fijo: {
+        modalidad: 'SIP_VOLCANBOARD',
+        precio_clp: 11790000,
+        precio_uf: 314.4
+        }
+      }
+    };
+
+    // Tarifas (EXACTO IGUAL AL ORIGINAL)
+    const tarifas = {
+      'MADERA_OSB': { util: 3.6, terraza: 2, entrepiso: 0.72, logia: 2.7 },
+      'SIP_VOLCANBOARD': { util: 4.8, terraza: 2, entrepiso: 0.72, logia: 3 },
+      'METALCON_VOLCANBOARD': { util: 4.6, terraza: 2, entrepiso: 1.72, logia: 3 }
+    };
+
+    // NUEVO: Función para detectar vendedor en URL
+    async function detectarVendedor() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigoVendedor = urlParams.get('vendedor') || urlParams.get('ref');
+        
+        if (codigoVendedor) {
+          console.log(`🧑‍💼 Código vendedor detectado: ${codigoVendedor}`);
+          
+          // Consultar vendedor en backend
+          const response = await fetch(`/.netlify/functions/vendedores-data?codigo=${codigoVendedor}`);
+          const data = await response.json();
+          
+          if (data.success && data.vendedor) {
+            vendedorActual = data.vendedor;
+            localStorage.setItem('vendedorFreelance', JSON.stringify(vendedorActual));
+            
+            // Limpiar URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Personalizar página
+            personalizarPagina();
+            
+            console.log(`✅ Vendedor cargado: ${vendedorActual.nombre}`);
+            return true;
+          }
+        }
+        
+        // Verificar localStorage
+        const vendedorGuardado = localStorage.getItem('vendedorFreelance');
+        if (vendedorGuardado) {
+          try {
+            vendedorActual = JSON.parse(vendedorGuardado);
+            personalizarPagina();
+            console.log(`🔄 Vendedor recuperado: ${vendedorActual.nombre}`);
+            return true;
+          } catch (error) {
+            localStorage.removeItem('vendedorFreelance');
+          }
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('❌ Error detectando vendedor:', error);
+        return false;
+      }
+    }
+
+    // NUEVO: Personalizar página según vendedor
+    function personalizarPagina() {
+      if (!vendedorActual) return;
+      
+      // Banner del vendedor
+      const banner = document.getElementById('vendedor-banner');
+      const nombre = document.getElementById('vendedor-nombre');
+      const mensaje = document.getElementById('vendedor-mensaje');
+      
+      if (banner && nombre && mensaje) {
+        nombre.textContent = `¡Hola! Soy ${vendedorActual.nombre}`;
+        mensaje.textContent = 'Tu asesor personal en casas prefabricadas. Te ayudo con tu cotización.';
+        banner.classList.add('show');
+      }
+      
+      // Info en formulario
+      const formInfo = document.getElementById('vendedor-form-info');
+      const formNombre = document.getElementById('vendedor-form-nombre');
+      
+      if (formInfo && formNombre) {
+        formNombre.textContent = vendedorActual.nombre;
+        formInfo.classList.add('show');
+      }
+      
+      // Botón personalizado
+      const btnEnviar = document.getElementById('btn-enviar');
+      const vendedorInfoBtn = document.getElementById('vendedor-info-btn');
+      
+      if (btnEnviar && vendedorInfoBtn) {
+        btnEnviar.classList.add('con-vendedor');
+        vendedorInfoBtn.textContent = `con ${vendedorActual.nombre}`;
+        vendedorInfoBtn.style.display = 'block';
+      }
+    }
+
+    // Funciones originales (SIN CAMBIOS)
+    async function obtenerValorUF() {
+      try {
+        console.log('💱 Obteniendo valor UF...');
+        const response = await fetch('https://mindicador.cl/api/uf');
+        const data = await response.json();
+        
+        if (data && data.serie && data.serie[0]) {
+          valorUF = parseFloat(data.serie[0].valor);
+          fechaUF = new Date(data.serie[0].fecha).toLocaleDateString('es-CL');
+          console.log(`✅ UF obtenida: ${valorUF.toLocaleString('es-CL')} (${fechaUF})`);
+          return true;
+        }
+      } catch (error) {
+        console.error('⚠️ Error al obtener UF:', error);
+        valorUF = 37500;
+        fechaUF = new Date().toLocaleDateString('es-CL');
+        console.log(`🔄 Usando UF de respaldo: ${valorUF.toLocaleString('es-CL')}`);
+      }
+      return false;
+    }
+
+    function calcularPrecio(nombreModelo, materialidad) {
+      const modelo = modelos[nombreModelo];
+      if (modelo && modelo.precio_fijo) {
+        if (materialidad === modelo.precio_fijo.modalidad) {
+          return {
+            uf: modelo.precio_fijo.precio_uf,
+            clp: modelo.precio_fijo.precio_clp
+          };
+        } else {
+          return null;
+        }
+      }
+      const tarifa = tarifas[materialidad];
+      
+      if (!modelo || !tarifa) return null;
+
+      let totalUF = 0;
+      
+      if (modelo.m2_utiles) {
+        totalUF += modelo.m2_utiles * tarifa.util;
+      }
+      
+      if (modelo.m2_terraza) {
+        totalUF += modelo.m2_terraza * tarifa.terraza;
+      }
+      
+      if (modelo.entrepiso && tarifa.entrepiso) {
+        totalUF += modelo.entrepiso * tarifa.entrepiso;
+      }
+      
+      if (modelo.logia && tarifa.logia) {
+        totalUF += modelo.logia * tarifa.logia;
+      }
+
+      return {
+        uf: Math.ceil(totalUF),
+        clp: Math.round(Math.ceil(totalUF) * valorUF)
+      };
+    }
+
+    function generarCatalogo() {
+      console.log('🏗️ Generando catálogo...');
+      const catalogo = document.getElementById('catalogo');
+      
+      if (!catalogo) {
+        console.error('❌ No se encontró el elemento #catalogo');
+        return;
+      }
+
+      catalogo.innerHTML = '';
+      
+      Object.entries(modelos).forEach(([nombre, modelo]) => {
+        let precioBase;
+        let etiquetaPrecio;
+        let etiquetaModalidad = '';
+        
+        if (modelo.precio_fijo) {
+          precioBase = {
+            uf: modelo.precio_fijo.precio_uf,
+            clp: modelo.precio_fijo.precio_clp
+          };
+          etiquetaPrecio = `<strong>$${precioBase.clp.toLocaleString('es-CL')} + IVA</strong>`;
+          etiquetaModalidad = '<div style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.75em; margin-top: 5px; text-align: center;">⭐ Solo Premium SIP</div>';
+        } else {
+          precioBase = calcularPrecio(nombre, 'MADERA_OSB');
+          etiquetaPrecio = `Desde <strong>${precioBase ? precioBase.uf : 'Consultar'} UF + IVA</strong>`;
+        }
+        
+        let specs = [
+          `${modelo.dormitorios} Dorm.`,
+          `${modelo.baños} Baños`
+        ];
+        
+        if (modelo.m2_terraza > 0) specs.push(`${modelo.m2_terraza}m² Terraza`);
+        if (modelo.entrepiso > 0) specs.push(`${modelo.entrepiso}m² Entrepiso`);
+        if (modelo.logia > 0) specs.push(`${modelo.logia}m² Logia`);
+
+        const m2Total = modelo.m2_utiles + modelo.m2_terraza + modelo.logia;
+        
+        const modeloDiv = document.createElement('div');
+        modeloDiv.className = 'modelo';
+        modeloDiv.innerHTML = `
+          <img src="${modelo.imagen}" alt="${nombre}" loading="lazy" onerror="this.style.display='none'; console.error('❌ Error cargando imagen: ${modelo.imagen}');">
+          <div class="modelo-content">
+            <h3>${nombre}</h3>
+            <div class="modelo-specs">
+              ${specs.map(spec => `<span class="spec">${spec}</span>`).join('')}
+            </div>
+            <div class="m2-total">
+              <strong>${m2Total}m² Totales</strong>
+              <br><small>${modelo.m2_utiles}m² útiles</small>
+              ${modelo.entrepiso > 0 ? `<br><small>${modelo.entrepiso}m² entrepiso</small>` : ''}
+            </div>
+            <p class="precio">${etiquetaPrecio}</p>
+             ${etiquetaModalidad}
+            <p style="font-size: 0.9em; color: #666; margin-bottom: 15px; line-height: 1.4;">
+              ${modelo.descripcion}
+            </p>
+            <div class="modelo-actions">
+              <button class="btn btn-primary" onclick="seleccionarModelo('${nombre}')">
+                Solicitar Cotización
+              </button>
+              <a href="${modelo.pdf}" target="_blank" class="btn btn-secondary">
+                Ver Planta PDF
+              </a>
+            </div>
+          </div>
+        `;
+        catalogo.appendChild(modeloDiv);
+      });
+      
+      console.log('✅ Catálogo generado exitosamente');
+    }
+
+    function seleccionarModelo(nombre) {
+      console.log(`🎯 Modelo seleccionado: ${nombre}`);
+      document.getElementById('modelo').value = nombre;
+      document.getElementById('formulario-cotizacion').scrollIntoView({ behavior: 'smooth' });
+      
+      const formContainer = document.querySelector('.form-container');
+      formContainer.style.boxShadow = '0 0 30px rgba(139, 90, 60, 0.3)';
+      setTimeout(() => {
+        formContainer.style.boxShadow = '0 10px 40px rgba(139, 90, 60, 0.15)';
+      }, 2000);
+    }
+
+    function toggleFinanciamiento(value) {
+      const extra = document.getElementById('financiamiento-extra');
+      if (value === 'si') {
+        extra.style.display = 'block';
+        extra.style.animation = 'slideDown 0.3s ease';
+      } else {
+        extra.style.display = 'none';
+      }
+    }
+
+    function configurarModal() {
+      const modal = document.getElementById('modal-cotizacion');
+      const closeBtn = document.querySelector('.close');
+      
+      if (closeBtn) {
+        closeBtn.onclick = function() {
+          modal.style.display = 'none';
+        };
+      }
+      
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      };
+    }
+
+    // MODIFICADO: Manejar envío del formulario con vendedor
+    document.getElementById('formulario-cotizacion').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const btnEnviar = document.getElementById('btn-enviar');
+      const loading = document.getElementById('loading');
+      const mensaje = document.getElementById('mensaje');
+      
+      btnEnviar.disabled = true;
+      loading.style.display = 'block';
+      mensaje.style.display = 'none';
+
+      // NUEVO: Incluir datos del vendedor
+      const datos = {
+        nombre: document.getElementById('nombre').value.trim(),
+        correo: document.getElementById('correo').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        modelo: document.getElementById('modelo').value,
+        habitaciones: document.getElementById('habitaciones').value,
+        sucursal: document.getElementById('sucursal').value,
+        financia: document.getElementById('financia').value,
+        monto: document.getElementById('monto').value || null,
+        rut: document.getElementById('rut').value.trim() || null,
+        comentario: document.getElementById('comentario').value.trim() || null,
+        vendedor: vendedorActual // NUEVO: Agregar vendedor
+      };
+
+      try {
+        // NUEVO: Enviar a función modificada para freelance
+        const response = await fetch('/.netlify/functions/enviar-cotizacion-freelance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok && resultado.success) {
+          mensaje.className = 'mensaje exito';
+          mensaje.innerHTML = `
+            <h3>🎉 ¡Cotización enviada exitosamente!</h3>
+            <p><strong>Número de cotización:</strong> ${resultado.cotizacion.numero}</p>
+            <p><strong>Modelo:</strong> ${resultado.cotizacion.modelo}</p>
+            <p><strong>Válida hasta:</strong> ${resultado.cotizacion.vigencia}</p>
+            ${vendedorActual ? `<p><strong>Tu asesor:</strong> ${vendedorActual.nombre}</p>` : ''}
+            <br>
+            <p>Hemos enviado la cotización detallada a tu correo electrónico.</p>
+          `;
+          mensaje.style.display = 'block';
+
+          mostrarModalCotizacion(resultado);
+
+          this.reset();
+          document.getElementById('financiamiento-extra').style.display = 'none';
+
+        } else {
+          throw new Error(resultado.error || 'Error desconocido');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        mensaje.className = 'mensaje error';
+        mensaje.innerHTML = `
+          <h3>❌ Error al enviar cotización</h3>
+          <p>${error.message || 'Hubo un problema al procesar tu solicitud. Por favor intenta nuevamente.'}</p>
+        `;
+        mensaje.style.display = 'block';
+      } finally {
+        btnEnviar.disabled = false;
+        loading.style.display = 'none';
+      }
+    });
+
+    // NUEVO: Modal con info del vendedor
+    function mostrarModalCotizacion(resultado) {
+      const modal = document.getElementById('modal-cotizacion');
+      const modalBody = document.getElementById('modal-body');
+      
+      const modeloInfo = modelos[resultado.cotizacion.modelo];
+      const m2Total = modeloInfo ? modeloInfo.m2_utiles + modeloInfo.m2_terraza + modeloInfo.logia : 'N/A';
+      
+      modalBody.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h3>Cotización #${resultado.cotizacion.numero}</h3>
+          <p>Modelo ${resultado.cotizacion.modelo} | ${resultado.cotizacion.modelo_info?.m2_utiles || modeloInfo?.m2_utiles || 'N/A'}m² útiles | ${m2Total}m² totales</p>
+          ${vendedorActual ? `<p style="color: #007bff; font-weight: 600;">👤 Tu asesor: ${vendedorActual.nombre}</p>` : ''}
+        </div>
+
+        <div style="background: #fff3cd; border: 2px solid #ffeaa7; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+          <h4 style="color: #856404; margin-bottom: 10px;">📊 Información de Cotización</h4>
+          <p style="margin: 5px 0;"><strong>Valor UF utilizado:</strong> $${resultado.cotizacion.uf?.valor?.toLocaleString('es-CL') || valorUF.toLocaleString('es-CL')}</p>
+          <p style="margin: 5px 0;"><strong>Fecha UF:</strong> ${resultado.cotizacion.uf?.fecha || fechaUF}</p>
+          <p style="margin: 5px 0;"><strong>Vigencia:</strong> ${resultado.cotizacion.vigencia}</p>
+          <small style="color: #666; font-style: italic;">(15 días corridos desde la fecha de emisión)</small>
+        </div>
+
+        <div class="precio-options">
+          ${resultado.cotizacion.precios.economica ? `
+            <div class="precio-option">
+              <h4 style="color: #6c757d;">🏠 Panel Madera</h4>
+              <p class="precio-subtitulo">Madera + OSB</p>
+              <div class="precio-valor">
+                $${resultado.cotizacion.precios.economica?.clp?.toLocaleString('es-CL') || 'N/A'} + IVA
+              </div>
+              <small>Opción económica, excelente calidad-precio</small>
+            </div>
+          ` : ''}
+          
+          ${resultado.cotizacion.precios.premium ? `
+            <div class="precio-option premium">
+              <h4 style="color: #28a745;">⭐ Panel Premium SIP</h4>
+              <p class="precio-subtitulo">SIP + Volcanboard</p>
+              <div class="precio-valor">
+                $${resultado.cotizacion.precios.premium?.clp?.toLocaleString('es-CL') || 'N/A'} + IVA
+              </div>
+              <small>Máxima eficiencia energética con aislación incluida</small>
+            </div>
+          ` : ''}
+          
+          ${resultado.cotizacion.precios.estructural ? `
+            <div class="precio-option">
+              <h4 style="color: #0074D9;">🔩 Panel Metalcon</h4>
+              <p class="precio-subtitulo">Metalcon + Volcanboard</p>
+              <div class="precio-valor">
+                $${resultado.cotizacion.precios.estructural?.clp?.toLocaleString('es-CL') || 'N/A'} + IVA
+              </div>
+              <small>Máxima resistencia sísmica con respaldo CINTAC</small>
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%); border: 2px solid #28a745; padding: 25px; border-radius: 12px; margin: 25px 0;">
+          <h4 style="color: #155724; margin-bottom: 15px; text-align: center;">🏠 ¡Más Opciones Disponibles!</h4>
+          <div style="text-align: center; color: #155724;">
+            <p style="margin: 8px 0; font-weight: 500;">
+              📐 <strong>Múltiples variantes y tamaños</strong> para cada modelo
+            </p>
+            <p style="margin: 8px 0;">
+              📏 <strong>Diferentes metrajes y distribuciones</strong> según tus necesidades
+            </p>
+            <p style="margin: 8px 0;">
+              🎯 <strong>Opciones personalizadas</strong> para tu presupuesto y terreno
+            </p>
+            <p style="margin: 15px 0 8px 0; font-style: italic; color: #666; font-size: 0.9em;">
+              💡 Pregunta a ${vendedorActual ? vendedorActual.nombre : 'tu agente'} por todas las variantes disponibles, 
+              tamaños adicionales y configuraciones especiales.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); border: 2px solid #17a2b8; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+          <h4 style="color: #0c5460; margin-bottom: 15px; text-align: center;">⚠️ Información Importante</h4>
+          <div style="text-align: center; color: #0c5460;">
+            <p style="margin: 8px 0; font-weight: 500;">
+              📋 <strong>Estos precios son referenciales</strong> y están sujetos a evaluación final.
+            </p>
+            <p style="margin: 8px 0;">
+              👤 <strong>Deben ser aprobados por ${vendedorActual ? vendedorActual.nombre : 'un agente de ventas'}</strong> de Prefabricadas Premium.
+            </p>
+            <p style="margin: 8px 0;">
+              📧 <strong>Recibirás un correo electrónico</strong> con la cotización detallada y planta PDF.
+            </p>
+            <p style="margin: 8px 0; font-size: 0.9em; font-style: italic;">
+              💡 Los precios finales pueden variar según las especificaciones del terreno, 
+              ubicación geográfica y requerimientos específicos del proyecto.
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="${resultado.whatsapp_url}" class="whatsapp-btn" target="_blank">
+            💬 Continuar por WhatsApp ${vendedorActual ? `con ${vendedorActual.nombre}` : ''}
+          </a>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+            ${vendedorActual ? 
+              `Conecta directamente con ${vendedorActual.nombre} para validar y confirmar tu cotización` :
+              'Conecta con nuestro especialista para validar y confirmar tu cotización'
+            }
+          </p>
+        </div>
+      `;
+      
+      modal.style.display = 'block';
+    }
+
+    // NUEVO: Inicialización con detección de vendedor
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('🚀 DOM cargado, inicializando sistema freelance...');
+      
+      try {
+        // Detectar vendedor PRIMERO
+        await detectarVendedor();
+        
+        // Obtener valor UF
+        await obtenerValorUF();
+        
+        // Generar catálogo
+        generarCatalogo();
+        
+        // Configurar modal
+        configurarModal();
+        
+        console.log('✅ Sistema freelance iniciado correctamente');
+        
+      } catch (error) {
+        console.error('❌ Error al inicializar:', error);
+        
+        const catalogo = document.getElementById('catalogo');
+        if (catalogo) {
+          catalogo.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #f8d7da; color: #721c24; border-radius: 10px;">
+              <h3>⚠️ Error al cargar el catálogo</h3>
+              <p>Por favor recarga la página. Si el problema persiste, contacta soporte.</p>
+              <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🔄 Recargar Página
+              </button>
+            </div>
+          `;
+        }
+      }
+    });
+
+    // Funciones globales
+    window.seleccionarModelo = seleccionarModelo;
+    window.toggleFinanciamiento = toggleFinanciamiento;
+    
+    console.log('✅ Script freelance cargado completamente');
+  </script>
+</body>
+</html>
