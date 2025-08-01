@@ -1,13 +1,17 @@
 // netlify/functions/enviar-cotizacion-freelance.js
-// Versión corregida con m2 totales, imágenes y FAQ
+// Versión con Google Sheets tracking y SendGrid webhooks
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Configuración
-let valorUF = 37500;
+// NUEVO: Google Sheets API para tracking
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
 
-// Datos de modelos - CORREGIDO con imágenes y m2 totales calculados
+// Configuración
+let valorUF = 37500; // Valor de respaldo
+
+// Datos de modelos con imágenes agregadas
 const modelos = {
   'Milán': {
     m2_utiles: 230,
@@ -17,7 +21,7 @@ const modelos = {
     dormitorios: 5,
     baños: 4,
     pdf: 'pdfs/milan.pdf',
-    imagen: 'modelos/milan.jpg', // AGREGADO
+    imagen: 'modelos/milan.jpg',
     descripcion: 'Casa familiar de gran tamaño con espacios amplios y distribución premium'
   },
   'Marbella': {
@@ -28,7 +32,7 @@ const modelos = {
     dormitorios: 4,
     baños: 2,
     pdf: 'pdfs/marbella.pdf',
-    imagen: 'modelos/marbella.jpg', // AGREGADO
+    imagen: 'modelos/marbella.jpg',
     descripcion: 'Diseño moderno de 4 dormitorios con amplia terraza'
   },
   'Praga': {
@@ -39,7 +43,7 @@ const modelos = {
     dormitorios: 4,
     baños: 3,
     pdf: 'pdfs/praga.pdf',
-    imagen: 'modelos/praga.jpg', // AGREGADO
+    imagen: 'modelos/praga.jpg',
     descripcion: 'Casa de 4 dormitorios con distribución eficiente'
   },
   'Barcelona': {
@@ -50,7 +54,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/barcelona.pdf',
-    imagen: 'modelos/barcelona.jpg', // AGREGADO
+    imagen: 'modelos/barcelona.jpg',
     descripcion: 'Casa mediterránea de 3 dormitorios con estilo clásico'
   },
   'Málaga': {
@@ -61,7 +65,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/malaga.pdf',
-    imagen: 'modelos/malaga.jpg', // AGREGADO
+    imagen: 'modelos/malaga.jpg',
     descripcion: 'Diseño compacto y funcional con terraza integrada'
   },
   'Capri': {
@@ -72,7 +76,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/capri.pdf',
-    imagen: 'modelos/capri.jpg', // AGREGADO
+    imagen: 'modelos/capri.jpg',
     descripcion: 'Casa acogedora con terraza generosa para la vida al aire libre'
   },
   'Cádiz': {
@@ -83,7 +87,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/cadiz.pdf',
-    imagen: 'modelos/cadiz.jpg', // AGREGADO
+    imagen: 'modelos/cadiz.jpg',
     descripcion: 'Casa de tamaño medio con distribución práctica y funcional'
   },
   'Toscana': {
@@ -94,7 +98,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/toscana.pdf',
-    imagen: 'modelos/toscana.jpg', // AGREGADO
+    imagen: 'modelos/toscana.jpg',
     descripcion: 'Casa starter perfecta para comenzar, diseño compacto e inteligente'
   },
   'Mónaco': {
@@ -105,7 +109,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/monaco.pdf',
-    imagen: 'modelos/monaco.jpg', // AGREGADO
+    imagen: 'modelos/monaco.jpg',
     descripcion: 'Casa de 2 pisos con espacios diferenciados y logia privada'
   },
   'Eclipse': {
@@ -116,7 +120,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/eclipse.pdf',
-    imagen: 'modelos/eclipse.jpg', // AGREGADO
+    imagen: 'modelos/eclipse.jpg',
     descripcion: 'Diseño moderno de 2 pisos compacto y eficiente'
   },
   'Amalfitano': {
@@ -127,7 +131,7 @@ const modelos = {
     dormitorios: 4,
     baños: 3,
     pdf: 'pdfs/amalfitano.pdf',
-    imagen: 'modelos/amalfitano.jpg', // AGREGADO
+    imagen: 'modelos/amalfitano.jpg',
     descripcion: 'Casa premium de gran tamaño en un piso con diseño mediterráneo'
   },
   'Santorini': {
@@ -138,7 +142,7 @@ const modelos = {
    dormitorios: 4,
    baños: 3,
    pdf: 'pdfs/santorini.pdf',
-   imagen: 'modelos/santorini.jpg', // AGREGADO
+   imagen: 'modelos/santorini.jpg',
    descripcion: 'Arquitectura contemporánea de 4 dormitorios y 3 baños que combina elegancia, amplitud y confort familiar en cada detalle',
    precio_fijo: {
    modalidad: 'SIP_VOLCANBOARD',
@@ -154,7 +158,7 @@ const modelos = {
     dormitorios: 2,
     baños: 1,
     pdf: 'pdfs/santorini-base.pdf',
-    imagen: 'modelos/santorini-base.jpg', // AGREGADO
+    imagen: 'modelos/santorini-base.jpg',
     descripcion: 'Diseño moderno y luminoso de 2 dormitorios y 1 baño, ideal para quienes buscan estilo y funcionalidad en espacios compactos',
     precio_fijo: {
     modalidad: 'SIP_VOLCANBOARD',
@@ -176,7 +180,7 @@ function calcularM2Totales(modelo) {
   return (modelo.m2_utiles || 0) + (modelo.m2_terraza || 0) + (modelo.logia || 0);
 }
 
-// NUEVA: Preguntas frecuentes específicas
+// Preguntas frecuentes actualizadas
 const preguntasFrecuentes = [
   {
     categoria: "Construcción y Calidad",
@@ -306,7 +310,7 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
   
   const modeloInfo = modelos[datos.modelo];
   if (modeloInfo) {
-    const m2Total = calcularM2Totales(modeloInfo); // CORREGIDO
+    const m2Total = calcularM2Totales(modeloInfo);
     mensaje += `• ${m2Total}m² totales (${modeloInfo.m2_utiles}m² útiles)\n`;
     mensaje += `• ${modeloInfo.dormitorios} dormitorios, ${modeloInfo.baños} baños\n`;
   }
@@ -349,6 +353,152 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
   mensaje += `\n⏰ Vigencia: ${cotizacion.vigencia}`;
   
   return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+}
+
+// NUEVA: Función para registrar en Google Sheets
+async function registrarEnGoogleSheets(datos, cotizacion) {
+  try {
+    const SHEET_ID = process.env.GOOGLE_SHEET_ID;
+    const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+    if (!SHEET_ID || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+      console.warn('⚠️ Configuración de Google Sheets incompleta');
+      return false;
+    }
+
+    const serviceAccountAuth = new JWT({
+      email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: GOOGLE_PRIVATE_KEY,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    const doc = new GoogleSpreadsheet(SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+
+    let sheet = doc.sheetsByTitle['Cotizaciones Freelance'];
+    if (!sheet) {
+      sheet = await doc.addSheet({ 
+        title: 'Cotizaciones Freelance',
+        headerValues: [
+          'Fecha/Hora',
+          'N° Cotización',
+          'Nombre Cliente',
+          'Email Cliente', 
+          'Teléfono Cliente',
+          'Modelo Solicitado',
+          'Habitaciones Necesarias',
+          'Sucursal Cercana',
+          'M2 Útiles',
+          'M2 Terraza',
+          'M2 Totales',
+          'Dormitorios',
+          'Baños',
+          'Precio Económica (CLP)',
+          'Precio Premium (CLP)',
+          'Precio Estructural (CLP)',
+          'Precio Económica (UF)',
+          'Precio Premium (UF)',
+          'Precio Estructural (UF)',
+          'Valor UF',
+          'Vigencia',
+          'Interesado en Financiar',
+          'Monto Financiamiento',
+          'RUT Cliente',
+          'Comentarios',
+          'Vendedor Freelance',
+          'Código Vendedor',
+          'Región Vendedor',
+          'Ciudad Vendedor',
+          'Teléfono Vendedor',
+          'Tipo Lead',
+          'Estado',
+          'Notas Internas',
+          // Columnas de tracking de email
+          'Email Entregado',
+          'Fecha Entrega Email',
+          'Aperturas Email',
+          'Primera Apertura',
+          'Última Apertura',
+          'Clicks Email',
+          'Primer Click',
+          'Último Click',
+          'URL Clickeada',
+          'Email Rebotado',
+          'Motivo Rebote',
+          'Email Descartado',
+          'Motivo Descarte',
+          'Marcado Spam',
+          'Desuscrito'
+        ]
+      });
+    }
+
+    const modeloInfo = cotizacion.modelo_info;
+    const vendedor = datos.vendedor;
+    const precios = cotizacion.precios;
+
+    const fila = {
+      'Fecha/Hora': new Date().toLocaleString('es-CL'),
+      'N° Cotización': cotizacion.numero,
+      'Nombre Cliente': datos.nombre || '',
+      'Email Cliente': datos.correo || '',
+      'Teléfono Cliente': datos.telefono || '',
+      'Modelo Solicitado': datos.modelo || '',
+      'Habitaciones Necesarias': datos.habitaciones || '',
+      'Sucursal Cercana': datos.sucursal || '',
+      'M2 Útiles': modeloInfo?.m2_utiles || '',
+      'M2 Terraza': modeloInfo?.m2_terraza || '',
+      'M2 Totales': modeloInfo?.m2_total || '',
+      'Dormitorios': modeloInfo?.dormitorios || '',
+      'Baños': modeloInfo?.baños || '',
+      'Precio Económica (CLP)': precios?.economica?.clp || '',
+      'Precio Premium (CLP)': precios?.premium?.clp || '',
+      'Precio Estructural (CLP)': precios?.estructural?.clp || '',
+      'Precio Económica (UF)': precios?.economica?.uf || '',
+      'Precio Premium (UF)': precios?.premium?.uf || '',
+      'Precio Estructural (UF)': precios?.estructural?.uf || '',
+      'Valor UF': cotizacion.uf?.valor || '',
+      'Vigencia': cotizacion.vigencia || '',
+      'Interesado en Financiar': datos.financia === 'si' ? 'SÍ' : 'NO',
+      'Monto Financiamiento': datos.monto || '',
+      'RUT Cliente': datos.rut || '',
+      'Comentarios': datos.comentario || '',
+      'Vendedor Freelance': vendedor?.nombre || '',
+      'Código Vendedor': vendedor?.codigo || '',
+      'Región Vendedor': vendedor?.region || '',
+      'Ciudad Vendedor': vendedor?.ciudad || '',
+      'Teléfono Vendedor': vendedor?.telefono || '',
+      'Tipo Lead': 'Freelance',
+      'Estado': 'Nuevo',
+      'Notas Internas': '',
+      // Campos de tracking de email inicializados
+      'Email Entregado': 'Pendiente',
+      'Fecha Entrega Email': '',
+      'Aperturas Email': '0',
+      'Primera Apertura': '',
+      'Última Apertura': '',
+      'Clicks Email': '0',
+      'Primer Click': '',
+      'Último Click': '',
+      'URL Clickeada': '',
+      'Email Rebotado': 'NO',
+      'Motivo Rebote': '',
+      'Email Descartado': 'NO',
+      'Motivo Descarte': '',
+      'Marcado Spam': 'NO',
+      'Desuscrito': 'NO'
+    };
+
+    await sheet.addRow(fila);
+    
+    console.log('✅ Datos registrados en Google Sheets:', cotizacion.numero);
+    return true;
+
+  } catch (error) {
+    console.error('❌ Error al registrar en Google Sheets:', error);
+    return false;
+  }
 }
 
 // Función principal
@@ -424,13 +574,13 @@ exports.handler = async (event, context) => {
     // CORREGIDO: Agregar m2_total al modelo_info
     const modeloConM2Total = {
       ...modelo,
-      m2_total: calcularM2Totales(modelo) // NUEVO CAMPO
+      m2_total: calcularM2Totales(modelo)
     };
     
     const cotizacion = {
       numero: numeroCotizacion,
       modelo: datos.modelo,
-      modelo_info: modeloConM2Total, // CORREGIDO
+      modelo_info: modeloConM2Total,
       precios: precios,
       uf: ufInfo,
       vigencia: vigencia.toLocaleDateString('es-CL'),
@@ -440,6 +590,7 @@ exports.handler = async (event, context) => {
 
     const whatsappURL = generarWhatsAppURL(datos, cotizacion, datos.vendedor);
 
+    // Enviar email con tracking de SendGrid
     try {
       const emailHTML = generarEmailCotizacion(datos, cotizacion);
       
@@ -447,34 +598,48 @@ exports.handler = async (event, context) => {
         to: datos.correo,
         from: 'cotizacion@prefabricadaspremium.cl',
         subject: `Cotización #${numeroCotizacion} - ${datos.modelo} - Prefabricadas Premium`,
-        html: emailHTML
+        html: emailHTML,
+        // NUEVO: Parámetros de tracking para SendGrid
+        categories: ['cotizacion', 'freelance'],
+        custom_args: {
+          cotizacion: numeroCotizacion,
+          vendedor: datos.vendedor?.codigo || 'directo',
+          modelo: datos.modelo,
+          tipo: 'cotizacion',
+          cliente_email: datos.correo,
+          fecha: new Date().toISOString()
+        },
+        tracking_settings: {
+          click_tracking: {
+            enable: true,
+            enable_text: true
+          },
+          open_tracking: {
+            enable: true,
+            substitution_tag: '%open-track%'
+          },
+          subscription_tracking: {
+            enable: false
+          }
+        }
       };
 
       await sgMail.send(msg);
-      console.log('✅ Email enviado correctamente');
+      console.log('✅ Email enviado correctamente con tracking habilitado');
       
     } catch (emailError) {
       console.error('⚠️ Error al enviar email:', emailError);
     }
 
-    const leadInfo = {
-      numero_cotizacion: numeroCotizacion,
-      cliente: {
-        nombre: datos.nombre,
-        email: datos.correo,
-        telefono: datos.telefono
-      },
-      modelo: datos.modelo,
-      vendedor_freelance: datos.vendedor ? {
-        nombre: datos.vendedor.nombre,
-        codigo: datos.vendedor.codigo,
-        telefono: datos.vendedor.telefono
-      } : null,
-      fecha: new Date().toISOString(),
-      tipo: 'freelance'
-    };
-    
-    console.log('📊 Lead registrado:', leadInfo);
+    // NUEVO: Registrar en Google Sheets para tracking
+    try {
+      const sheetRegistrado = await registrarEnGoogleSheets(datos, cotizacion);
+      if (sheetRegistrado) {
+        console.log('📊 Lead registrado en Google Sheets:', numeroCotizacion);
+      }
+    } catch (sheetError) {
+      console.error('⚠️ Error al registrar en Google Sheets:', sheetError);
+    }
 
     return {
       statusCode: 200,
@@ -887,7 +1052,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               font-size: 14px;
           }
           
-          /* NUEVO: Estilos para FAQ con categorías */
           .faq-section {
               background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
               border-radius: 12px;
@@ -1151,7 +1315,6 @@ function generarEmailCotizacion(datos, cotizacion) {
                           <div class="faq-section">
                               <h3 class="faq-title">❓ Preguntas Frecuentes</h3>
                               ${(() => {
-                                // Agrupar preguntas por categoría
                                 const categorias = {};
                                 preguntasFrecuentes.forEach(faq => {
                                   if (!categorias[faq.categoria]) {
@@ -1160,7 +1323,6 @@ function generarEmailCotizacion(datos, cotizacion) {
                                   categorias[faq.categoria].push(faq);
                                 });
                                 
-                                // Renderizar por categorías
                                 return Object.keys(categorias).map(categoria => `
                                   <div class="faq-categoria">${categoria}</div>
                                   ${categorias[categoria].map(faq => `
