@@ -1,14 +1,13 @@
 // netlify/functions/enviar-cotizacion-freelance.js
-// Versión modificada para vendedores freelance
+// Versión corregida con m2 totales, imágenes y FAQ
 
-// Importar funciones de envío de email (copiadas de la función original)
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Configuración (IGUAL A LA ORIGINAL)
-let valorUF = 37500; // Valor de respaldo
+// Configuración
+let valorUF = 37500;
 
-// Datos de modelos (EXACTO IGUAL AL ORIGINAL)
+// Datos de modelos - CORREGIDO con imágenes y m2 totales calculados
 const modelos = {
   'Milán': {
     m2_utiles: 230,
@@ -18,6 +17,7 @@ const modelos = {
     dormitorios: 5,
     baños: 4,
     pdf: 'pdfs/milan.pdf',
+    imagen: 'modelos/milan.jpg', // AGREGADO
     descripcion: 'Casa familiar de gran tamaño con espacios amplios y distribución premium'
   },
   'Marbella': {
@@ -28,6 +28,7 @@ const modelos = {
     dormitorios: 4,
     baños: 2,
     pdf: 'pdfs/marbella.pdf',
+    imagen: 'modelos/marbella.jpg', // AGREGADO
     descripcion: 'Diseño moderno de 4 dormitorios con amplia terraza'
   },
   'Praga': {
@@ -38,6 +39,7 @@ const modelos = {
     dormitorios: 4,
     baños: 3,
     pdf: 'pdfs/praga.pdf',
+    imagen: 'modelos/praga.jpg', // AGREGADO
     descripcion: 'Casa de 4 dormitorios con distribución eficiente'
   },
   'Barcelona': {
@@ -48,6 +50,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/barcelona.pdf',
+    imagen: 'modelos/barcelona.jpg', // AGREGADO
     descripcion: 'Casa mediterránea de 3 dormitorios con estilo clásico'
   },
   'Málaga': {
@@ -58,6 +61,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/malaga.pdf',
+    imagen: 'modelos/malaga.jpg', // AGREGADO
     descripcion: 'Diseño compacto y funcional con terraza integrada'
   },
   'Capri': {
@@ -68,6 +72,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/capri.pdf',
+    imagen: 'modelos/capri.jpg', // AGREGADO
     descripcion: 'Casa acogedora con terraza generosa para la vida al aire libre'
   },
   'Cádiz': {
@@ -78,6 +83,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/cadiz.pdf',
+    imagen: 'modelos/cadiz.jpg', // AGREGADO
     descripcion: 'Casa de tamaño medio con distribución práctica y funcional'
   },
   'Toscana': {
@@ -88,6 +94,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/toscana.pdf',
+    imagen: 'modelos/toscana.jpg', // AGREGADO
     descripcion: 'Casa starter perfecta para comenzar, diseño compacto e inteligente'
   },
   'Mónaco': {
@@ -98,6 +105,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/monaco.pdf',
+    imagen: 'modelos/monaco.jpg', // AGREGADO
     descripcion: 'Casa de 2 pisos con espacios diferenciados y logia privada'
   },
   'Eclipse': {
@@ -108,6 +116,7 @@ const modelos = {
     dormitorios: 3,
     baños: 2,
     pdf: 'pdfs/eclipse.pdf',
+    imagen: 'modelos/eclipse.jpg', // AGREGADO
     descripcion: 'Diseño moderno de 2 pisos compacto y eficiente'
   },
   'Amalfitano': {
@@ -118,6 +127,7 @@ const modelos = {
     dormitorios: 4,
     baños: 3,
     pdf: 'pdfs/amalfitano.pdf',
+    imagen: 'modelos/amalfitano.jpg', // AGREGADO
     descripcion: 'Casa premium de gran tamaño en un piso con diseño mediterráneo'
   },
   'Santorini': {
@@ -128,6 +138,7 @@ const modelos = {
    dormitorios: 4,
    baños: 3,
    pdf: 'pdfs/santorini.pdf',
+   imagen: 'modelos/santorini.jpg', // AGREGADO
    descripcion: 'Arquitectura contemporánea de 4 dormitorios y 3 baños que combina elegancia, amplitud y confort familiar en cada detalle',
    precio_fijo: {
    modalidad: 'SIP_VOLCANBOARD',
@@ -143,6 +154,7 @@ const modelos = {
     dormitorios: 2,
     baños: 1,
     pdf: 'pdfs/santorini-base.pdf',
+    imagen: 'modelos/santorini-base.jpg', // AGREGADO
     descripcion: 'Diseño moderno y luminoso de 2 dormitorios y 1 baño, ideal para quienes buscan estilo y funcionalidad en espacios compactos',
     precio_fijo: {
     modalidad: 'SIP_VOLCANBOARD',
@@ -152,14 +164,58 @@ const modelos = {
   }
 };
 
-// Tarifas (IGUAL AL ORIGINAL)
+// Tarifas
 const tarifas = {
   'MADERA_OSB': { util: 3.6, terraza: 2, entrepiso: 0.72, logia: 2.7 },
   'SIP_VOLCANBOARD': { util: 4.8, terraza: 2, entrepiso: 0.72, logia: 3 },
   'METALCON_VOLCANBOARD': { util: 4.6, terraza: 2, entrepiso: 1.72, logia: 3 }
 };
 
-// Funciones auxiliares (COPIADAS DEL ORIGINAL)
+// NUEVA: Función para calcular m2 totales (sin entrepiso)
+function calcularM2Totales(modelo) {
+  return (modelo.m2_utiles || 0) + (modelo.m2_terraza || 0) + (modelo.logia || 0);
+}
+
+// NUEVA: Preguntas frecuentes específicas
+const preguntasFrecuentes = [
+  {
+    categoria: "Construcción y Calidad",
+    pregunta: "¿Cuánto tiempo demora la construcción?",
+    respuesta: "La fabricación toma 6-8 semanas en condiciones controladas de fábrica, más 1-2 semanas de montaje en sitio. Total: 2-3 meses versus 6-12 meses de construcción tradicional."
+  },
+  {
+    categoria: "Construcción y Calidad",
+    pregunta: "¿Trabajan con materiales certificados?",
+    respuesta: "Sí, nuestros materiales cuentan con certificación para cada mundo constructivo: Madera (Certificación estructural y de impregnación al vacío), Metalcon (Respaldo de CINTAC), Premium SIP (Certificado al corte por IDIEM)."
+  },
+  {
+    categoria: "Construcción y Calidad",
+    pregunta: "¿Qué otros modelos y tamaños tienen disponibles?",
+    respuesta: "Además de las opciones mostradas, tenemos múltiples variantes para cada modelo con diferentes metrajes y configuraciones. Consulta con tu agente de ventas por todas las opciones disponibles según tus necesidades específicas."
+  },
+  {
+    categoria: "Financiamiento",
+    pregunta: "¿Puedo financiar mi casa prefabricada?",
+    respuesta: "Sí, trabajamos con SALVUM donde, bajo evaluación crediticia, puedes financiar hasta en 60 cuotas. También te asesoramos en la postulación a subsidios DS1, DS49 y DS19 sin costo adicional."
+  },
+  {
+    categoria: "Financiamiento",
+    pregunta: "¿Cómo funciona el pago por etapas?",
+    respuesta: "Todos nuestros proyectos se pueden comprar a través de etapas, donde alrededor del 50% del proyecto se paga una semana antes de la entrega. El resto se puede financiar según las condiciones acordadas."
+  },
+  {
+    categoria: "Materialidad y Servicios",
+    pregunta: "¿Qué incluye? / ¿Trabajan llave en mano?",
+    respuesta: "Podemos realizar el radier y armar tu proyecto, o entregarte el KIT de autoconstrucción con asesoría de un ITO (Inspector Técnico de Obra) y listado de maestros calificados."
+  },
+  {
+    categoria: "Materialidad y Servicios",
+    pregunta: "¿Qué incluye el kit y qué no?",
+    respuesta: "Incluimos estructura, revestimientos y herrajes para obra gruesa. NO incluye: electricidad, gasfitería, pavimentos, puertas, ventanas. Aislación solo incluida en Panel SIP. Tenemos alianzas para adquirir especialidades a precios económicos."
+  }
+];
+
+// Funciones auxiliares
 async function obtenerValorUF() {
   try {
     const response = await fetch('https://mindicador.cl/api/uf');
@@ -231,13 +287,11 @@ function generarNumeroCotizacion() {
   const dia = fecha.getDate().toString().padStart(2, '0');
   const timestamp = Date.now().toString().slice(-4);
   
-  return `PP${año}${mes}${dia}-FL${timestamp}`; // FL = FreeLance
+  return `PP${año}${mes}${dia}-FL${timestamp}`;
 }
 
-// NUEVA: Función para generar URL de WhatsApp con vendedor freelance
 function generarWhatsAppURL(datos, cotizacion, vendedor) {
-  // Si hay vendedor freelance, usar su teléfono
-  const telefono = vendedor ? vendedor.telefono : '56955278508'; // Teléfono de respaldo
+  const telefono = vendedor ? vendedor.telefono : '56955278508';
   
   let mensaje = `🏠 *NUEVA COTIZACIÓN - CASAS PREFABRICADAS*\n\n`;
   mensaje += `👤 *CLIENTE:*\n`;
@@ -252,7 +306,7 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
   
   const modeloInfo = modelos[datos.modelo];
   if (modeloInfo) {
-    const m2Total = modeloInfo.m2_utiles + modeloInfo.m2_terraza + modeloInfo.logia;
+    const m2Total = calcularM2Totales(modeloInfo); // CORREGIDO
     mensaje += `• ${m2Total}m² totales (${modeloInfo.m2_utiles}m² útiles)\n`;
     mensaje += `• ${modeloInfo.dormitorios} dormitorios, ${modeloInfo.baños} baños\n`;
   }
@@ -283,7 +337,6 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
     mensaje += `\n💬 *COMENTARIOS:*\n${datos.comentario}\n`;
   }
   
-  // NUEVO: Información del vendedor freelance
   if (vendedor) {
     mensaje += `\n🤝 *VENDEDOR FREELANCE:*\n`;
     mensaje += `• Nombre: ${vendedor.nombre}\n`;
@@ -331,7 +384,6 @@ exports.handler = async (event, context) => {
       vendedor: datos.vendedor ? datos.vendedor.nombre : 'Sin vendedor'
     });
 
-    // Validar datos requeridos
     if (!datos.nombre || !datos.correo || !datos.telefono || !datos.modelo) {
       return {
         statusCode: 400,
@@ -343,19 +395,13 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Obtener valor UF actualizado
     const ufInfo = await obtenerValorUF();
-    
-    // Generar número de cotización
     const numeroCotizacion = generarNumeroCotizacion();
     
-    // Calcular precios para todas las modalidades
     const precios = {};
-    
-    // Solo calcular precios disponibles para el modelo
     const modelo = modelos[datos.modelo];
+    
     if (modelo && modelo.precio_fijo) {
-      // Solo modalidad fija disponible
       const precio = calcularPrecio(datos.modelo, modelo.precio_fijo.modalidad, ufInfo.valor);
       if (precio) {
         if (modelo.precio_fijo.modalidad === 'SIP_VOLCANBOARD') {
@@ -363,7 +409,6 @@ exports.handler = async (event, context) => {
         }
       }
     } else {
-      // Todas las modalidades disponibles
       const economica = calcularPrecio(datos.modelo, 'MADERA_OSB', ufInfo.valor);
       const premium = calcularPrecio(datos.modelo, 'SIP_VOLCANBOARD', ufInfo.valor);
       const estructural = calcularPrecio(datos.modelo, 'METALCON_VOLCANBOARD', ufInfo.valor);
@@ -373,26 +418,28 @@ exports.handler = async (event, context) => {
       if (estructural) precios.estructural = estructural;
     }
 
-    // Calcular vigencia (15 días)
     const vigencia = new Date();
     vigencia.setDate(vigencia.getDate() + 15);
     
-    // Crear objeto cotización
+    // CORREGIDO: Agregar m2_total al modelo_info
+    const modeloConM2Total = {
+      ...modelo,
+      m2_total: calcularM2Totales(modelo) // NUEVO CAMPO
+    };
+    
     const cotizacion = {
       numero: numeroCotizacion,
       modelo: datos.modelo,
-      modelo_info: modelo,
+      modelo_info: modeloConM2Total, // CORREGIDO
       precios: precios,
       uf: ufInfo,
       vigencia: vigencia.toLocaleDateString('es-CL'),
       fecha: new Date().toLocaleDateString('es-CL'),
-      vendedor: datos.vendedor || null // NUEVO: Incluir vendedor
+      vendedor: datos.vendedor || null
     };
 
-    // NUEVO: Generar URL de WhatsApp con vendedor freelance
     const whatsappURL = generarWhatsAppURL(datos, cotizacion, datos.vendedor);
 
-    // Enviar email de cotización (igual que original pero con info del vendedor)
     try {
       const emailHTML = generarEmailCotizacion(datos, cotizacion);
       
@@ -408,10 +455,8 @@ exports.handler = async (event, context) => {
       
     } catch (emailError) {
       console.error('⚠️ Error al enviar email:', emailError);
-      // No fallar la operación si falla el email
     }
 
-    // NUEVO: Registrar lead con información del vendedor
     const leadInfo = {
       numero_cotizacion: numeroCotizacion,
       cliente: {
@@ -431,7 +476,6 @@ exports.handler = async (event, context) => {
     
     console.log('📊 Lead registrado:', leadInfo);
 
-    // Respuesta exitosa
     return {
       statusCode: 200,
       headers,
@@ -461,9 +505,7 @@ exports.handler = async (event, context) => {
   }
 };
 
-// Función para generar email HTML (copiada y adaptada del original)
-// NUEVA FUNCIÓN: Email atractivo para freelance (reemplazar en enviar-cotizacion-freelance.js)
-
+// FUNCIÓN DE EMAIL CORREGIDA CON FAQ Y M2 TOTALES
 function generarEmailCotizacion(datos, cotizacion) {
   const preciosOrdenados = ['economica', 'premium', 'estructural'].map(tipo => {
     if (cotizacion.precios[tipo]) {
@@ -472,21 +514,17 @@ function generarEmailCotizacion(datos, cotizacion) {
     return null;
   }).filter(precio => precio && precio.uf);
 
-  // NUEVO: URLs con tracking personalizado para vendedor freelance
   const vendedor = datos.vendedor;
   const trackingParams = `utm_source=email_freelance&utm_medium=cotizacion&utm_campaign=${cotizacion.numero}&utm_content=${cotizacion.modelo}&vendedor=${vendedor?.codigo || 'directo'}`;
   
-  // WhatsApp del vendedor freelance o general
   const whatsappTelefono = vendedor ? vendedor.telefono : '56955278508';
   const whatsappUrl = `https://wa.me/${whatsappTelefono}?text=${encodeURIComponent(`¡Hola! 👋 Soy ${datos.nombre}, recibí la cotización ${cotizacion.numero} para el modelo ${datos.modelo}. ${vendedor ? `Me contacté a través de ${vendedor.nombre}.` : ''} Me interesa conocer más detalles sobre el proyecto. ¿Cuándo podríamos conversar? ¡Gracias!`)}&${trackingParams}`;
   
   const pdfUrl = `https://premiumfreelance.netlify.app/${cotizacion.modelo_info?.pdf || 'pdfs/modelo.pdf'}?${trackingParams}`;
   
-  // Brochure Google Drive
   const googleDriveFileId = '1p8NDSfSiBR8KgbQI_U_cGoJQ5WTOVuDz';
   const brochureUrl = `https://drive.google.com/file/d/${googleDriveFileId}/view?${trackingParams}&referrer=email_freelance`;
 
-  // OPCIONES RECOMENDADAS para el email
   const OPCIONES_EMAIL = {
     economica: {
       titulo: 'Panel Madera', subtitulo: 'Madera + OSB',
@@ -537,11 +575,9 @@ function generarEmailCotizacion(datos, cotizacion) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>✅ Tu Cotización ${cotizacion.numero} - ${vendedor ? vendedor.nombre : 'Prefabricadas Premium'}</title>
       
-      <!-- Pixel de tracking para vendedor freelance -->
       <img src="https://api.sendgrid.com/v3/tracking/open.gif?cotizacion=${cotizacion.numero}&email=${encodeURIComponent(datos.correo)}&vendedor=${vendedor?.codigo || 'directo'}" width="1" height="1" style="display:none;">
       
       <style>
-          /* RESET Y ESTILOS BASE */
           * { margin: 0; padding: 0; box-sizing: border-box; }
           
           body { 
@@ -561,7 +597,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               box-shadow: 0 4px 20px rgba(0,0,0,0.1);
           }
           
-          /* HEADER VENDEDOR FREELANCE */
           .header { 
               background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
               color: white; 
@@ -599,7 +634,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               display: inline-block;
           }
           
-          /* VENDEDOR INFO DESTACADA */
           .vendedor-hero {
               background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%);
               border: 2px solid #007bff;
@@ -633,7 +667,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               margin-top: 10px;
           }
           
-          /* SECCIONES */
           .section {
               padding: 30px;
               border-bottom: 1px solid #f0f0f0;
@@ -651,7 +684,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               text-align: center;
           }
           
-          /* INFORMACIÓN CLIENTE */
           .cliente-info {
               background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
               border-left: 4px solid #8B5A3C;
@@ -683,7 +715,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               text-align: right;
           }
           
-          /* MODELO SHOWCASE */
           .modelo-card {
               background: linear-gradient(135deg, #8B5A3C 0%, #A67C52 100%);
               color: white;
@@ -733,7 +764,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               letter-spacing: 0.5px;
           }
           
-          /* IMAGEN CASA */
           .casa-imagen {
               text-align: center;
               margin: 25px 0;
@@ -746,7 +776,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               box-shadow: 0 8px 25px rgba(0,0,0,0.15);
           }
           
-          /* PRECIOS ATRACTIVOS */
           .precio-card {
               border: 2px solid #e9ecef;
               border-radius: 12px;
@@ -819,7 +848,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               font-weight: 600;
           }
           
-          /* INCLUYE */
           .incluye-section {
               margin-top: 20px;
           }
@@ -859,7 +887,56 @@ function generarEmailCotizacion(datos, cotizacion) {
               font-size: 14px;
           }
           
-          /* BOTONES */
+          /* NUEVO: Estilos para FAQ con categorías */
+          .faq-section {
+              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+              border-radius: 12px;
+              padding: 25px;
+              margin: 25px 0;
+          }
+          
+          .faq-title {
+              color: #8B5A3C;
+              font-size: 20px;
+              font-weight: 700;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          
+          .faq-categoria {
+              color: #007bff;
+              font-size: 16px;
+              font-weight: 700;
+              margin: 20px 0 10px 0;
+              padding-bottom: 5px;
+              border-bottom: 2px solid #007bff;
+          }
+          
+          .faq-categoria:first-child {
+              margin-top: 0;
+          }
+          
+          .faq-item {
+              background: white;
+              border-radius: 8px;
+              padding: 15px;
+              margin-bottom: 12px;
+              border-left: 4px solid #28a745;
+          }
+          
+          .faq-question {
+              font-weight: 700;
+              color: #2C1810;
+              margin-bottom: 8px;
+              font-size: 14px;
+          }
+          
+          .faq-answer {
+              color: #666;
+              font-size: 13px;
+              line-height: 1.5;
+          }
+          
           .btn {
               display: inline-block;
               padding: 14px 28px;
@@ -894,7 +971,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               margin: 20px 0;
           }
           
-          /* INFORMACIÓN IMPORTANTE */
           .info-importante {
               background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
               border: 2px solid #ffc107;
@@ -916,7 +992,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               font-size: 14px;
           }
           
-          /* FOOTER VENDEDOR */
           .footer {
               background: #2C1810;
               color: white;
@@ -934,7 +1009,6 @@ function generarEmailCotizacion(datos, cotizacion) {
               opacity: 0.9;
           }
           
-          /* RESPONSIVE */
           @media only screen and (max-width: 600px) {
               .email-container {
                   margin: 0;
@@ -979,7 +1053,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                               <h3>👋 ¡Hola ${datos.nombre.split(' ')[0]}!</h3>
                               <p><strong>Soy ${vendedor.nombre}</strong></p>
                               <p>Tu asesor personal en casas prefabricadas</p>
-                              <p>📍 ${vendedor.region} - ${vendedor.ciudad}</p>
+                              <p>📍 ${vendedor.region} - ${vendedor.ciudad || 'Región'}</p>
                               <div class="vendedor-badge">Código: ${vendedor.codigo}</div>
                           </div>
                           <div style="text-align: center; color: #666; font-size: 14px; margin-top: 15px;">
@@ -1016,10 +1090,11 @@ function generarEmailCotizacion(datos, cotizacion) {
                               ` : ''}
                           </div>
                           
-                          <!-- IMAGEN DE LA CASA -->
+                          <!-- IMAGEN DE LA CASA CORREGIDA -->
                           <div class="casa-imagen">
                               <img src="https://premiumfreelance.netlify.app/${cotizacion.modelo_info?.imagen || 'modelos/default.jpg'}" 
                                    alt="Casa modelo ${datos.modelo}" 
+                                   onerror="this.src='https://via.placeholder.com/500x300/8B5A3C/FFFFFF?text=Modelo+${datos.modelo}'"
                                    style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
                               <p style="margin-top: 10px; font-size: 13px; color: #666; text-align: center; font-style: italic;">
                                   Vista exterior del modelo ${datos.modelo}
@@ -1027,7 +1102,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                           </div>
                       </div>
                       
-                      <!-- MODELO -->
+                      <!-- MODELO CON M2 TOTALES CORREGIDOS -->
                       <div class="section">
                           <div class="modelo-card">
                               <div class="modelo-name">${datos.modelo}</div>
@@ -1053,7 +1128,6 @@ function generarEmailCotizacion(datos, cotizacion) {
                               </div>
                           </div>
                           
-                          <!-- BOTONES DE DESCARGA -->
                           <div style="text-align: center;">
                               <a href="${pdfUrl}" class="btn btn-primary" target="_blank">
                                   📄 Descargar Planta Técnica
@@ -1069,6 +1143,34 @@ function generarEmailCotizacion(datos, cotizacion) {
                               <a href="${brochureUrl}" class="btn btn-secondary" target="_blank">
                                   Ver Brochure Completo
                               </a>
+                          </div>
+                      </div>
+                      
+                      <!-- PREGUNTAS FRECUENTES - ACTUALIZADO -->
+                      <div class="section">
+                          <div class="faq-section">
+                              <h3 class="faq-title">❓ Preguntas Frecuentes</h3>
+                              ${(() => {
+                                // Agrupar preguntas por categoría
+                                const categorias = {};
+                                preguntasFrecuentes.forEach(faq => {
+                                  if (!categorias[faq.categoria]) {
+                                    categorias[faq.categoria] = [];
+                                  }
+                                  categorias[faq.categoria].push(faq);
+                                });
+                                
+                                // Renderizar por categorías
+                                return Object.keys(categorias).map(categoria => `
+                                  <div class="faq-categoria">${categoria}</div>
+                                  ${categorias[categoria].map(faq => `
+                                    <div class="faq-item">
+                                        <div class="faq-question">Q: ${faq.pregunta}</div>
+                                        <div class="faq-answer">R: ${faq.respuesta}</div>
+                                    </div>
+                                  `).join('')}
+                                `).join('');
+                              })()}
                           </div>
                       </div>
                       
@@ -1101,7 +1203,6 @@ function generarEmailCotizacion(datos, cotizacion) {
                             `;
                           }).join('')}
                           
-                          <!-- INFORMACIÓN IMPORTANTE -->
                           <div class="info-importante">
                               <h4>⚠️ Información Importante</h4>
                               <p><strong>Estos precios son referenciales y están sujetos a evaluación final.</strong></p>
@@ -1156,7 +1257,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                           <h3>${vendedor ? `${vendedor.nombre} - Prefabricadas Premium` : 'Prefabricadas Premium'}</h3>
                           <p><strong>${vendedor ? 'Tu asesor personal en casas prefabricadas' : 'Construyendo sueños, creando hogares'}</strong></p>
                           ${vendedor ? `
-                          <p>📍 ${vendedor.region} - ${vendedor.ciudad}</p>
+                          <p>📍 ${vendedor.region} - ${vendedor.ciudad || 'Región'}</p>
                           <p>📱 ${whatsappTelefono.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '+$1 $2 $3 $4')}</p>
                           <p>👤 Código de vendedor: ${vendedor.codigo}</p>
                           ` : ''}
