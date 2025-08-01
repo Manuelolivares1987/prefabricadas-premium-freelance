@@ -462,137 +462,715 @@ exports.handler = async (event, context) => {
 };
 
 // Función para generar email HTML (copiada y adaptada del original)
-function generarEmailCotizacion(datos, cotizacion) {
-  const modelo = modelos[datos.modelo];
-  const m2Total = modelo ? modelo.m2_utiles + modelo.m2_terraza + modelo.logia : 'N/A';
-  
-  let preciosHTML = '';
-  
-  if (cotizacion.precios.economica) {
-    preciosHTML += `
-      <tr>
-        <td style="padding: 15px; border-bottom: 1px solid #ddd;">
-          <strong>🏠 Panel Madera (OSB)</strong><br>
-          <small>Opción económica, excelente calidad-precio</small>
-        </td>
-        <td style="padding: 15px; border-bottom: 1px solid #ddd; text-align: right;">
-          <strong>$${cotizacion.precios.economica.clp.toLocaleString('es-CL')} + IVA</strong><br>
-          <small>${cotizacion.precios.economica.uf} UF</small>
-        </td>
-      </tr>
-    `;
-  }
-  
-  if (cotizacion.precios.premium) {
-    preciosHTML += `
-      <tr style="background-color: #e8f5e8;">
-        <td style="padding: 15px; border-bottom: 1px solid #ddd;">
-          <strong>⭐ Panel Premium SIP (Volcanboard)</strong><br>
-          <small>Máxima eficiencia energética con aislación incluida</small>
-        </td>
-        <td style="padding: 15px; border-bottom: 1px solid #ddd; text-align: right;">
-          <strong>$${cotizacion.precios.premium.clp.toLocaleString('es-CL')} + IVA</strong><br>
-          <small>${cotizacion.precios.premium.uf} UF</small>
-        </td>
-      </tr>
-    `;
-  }
-  
-  if (cotizacion.precios.estructural) {
-    preciosHTML += `
-      <tr>
-        <td style="padding: 15px; border-bottom: 1px solid #ddd;">
-          <strong>🔩 Panel Metalcon (Volcanboard)</strong><br>
-          <small>Máxima resistencia sísmica con respaldo CINTAC</small>
-        </td>
-        <td style="padding: 15px; border-bottom: 1px solid #ddd; text-align: right;">
-          <strong>$${cotizacion.precios.estructural.clp.toLocaleString('es-CL')} + IVA</strong><br>
-          <small>${cotizacion.precios.estructural.uf} UF</small>
-        </td>
-      </tr>
-    `;
-  }
+// NUEVA FUNCIÓN: Email atractivo para freelance (reemplazar en enviar-cotizacion-freelance.js)
 
-  // NUEVO: Información del vendedor en el email
-  let vendedorHTML = '';
-  if (cotizacion.vendedor) {
-    vendedorHTML = `
-      <div style="background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%); padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #007bff;">
-        <h3 style="color: #007bff; margin-bottom: 10px;">🤝 Tu Asesor Personal</h3>
-        <p style="margin: 5px 0;"><strong>Nombre:</strong> ${cotizacion.vendedor.nombre}</p>
-        <p style="margin: 5px 0;"><strong>Región:</strong> ${cotizacion.vendedor.region}</p>
-        <p style="margin: 5px 0; color: #666;">
-          ${cotizacion.vendedor.nombre} será tu contacto directo para todas las consultas sobre esta cotización.
-        </p>
-      </div>
-    `;
-  }
+function generarEmailCotizacion(datos, cotizacion) {
+  const preciosOrdenados = ['economica', 'premium', 'estructural'].map(tipo => {
+    if (cotizacion.precios[tipo]) {
+      return { tipo, ...cotizacion.precios[tipo] };
+    }
+    return null;
+  }).filter(precio => precio && precio.uf);
+
+  // NUEVO: URLs con tracking personalizado para vendedor freelance
+  const vendedor = datos.vendedor;
+  const trackingParams = `utm_source=email_freelance&utm_medium=cotizacion&utm_campaign=${cotizacion.numero}&utm_content=${cotizacion.modelo}&vendedor=${vendedor?.codigo || 'directo'}`;
+  
+  // WhatsApp del vendedor freelance o general
+  const whatsappTelefono = vendedor ? vendedor.telefono : '56955278508';
+  const whatsappUrl = `https://wa.me/${whatsappTelefono}?text=${encodeURIComponent(`¡Hola! 👋 Soy ${datos.nombre}, recibí la cotización ${cotizacion.numero} para el modelo ${datos.modelo}. ${vendedor ? `Me contacté a través de ${vendedor.nombre}.` : ''} Me interesa conocer más detalles sobre el proyecto. ¿Cuándo podríamos conversar? ¡Gracias!`)}&${trackingParams}`;
+  
+  const pdfUrl = `https://premiumfreelance.netlify.app/${cotizacion.modelo_info?.pdf || 'pdfs/modelo.pdf'}?${trackingParams}`;
+  
+  // Brochure Google Drive
+  const googleDriveFileId = '1p8NDSfSiBR8KgbQI_U_cGoJQ5WTOVuDz';
+  const brochureUrl = `https://drive.google.com/file/d/${googleDriveFileId}/view?${trackingParams}&referrer=email_freelance`;
+
+  // OPCIONES RECOMENDADAS para el email
+  const OPCIONES_EMAIL = {
+    economica: {
+      titulo: 'Panel Madera', subtitulo: 'Madera + OSB',
+      descripcion: 'Excelente relación calidad-precio',
+      color: '#6c757d', icono: '🏠',
+      incluye: [
+        'Estructura de madera certificada',
+        'Revestimiento OSB resistente',
+        'Kit de autoconstrucción completo',
+        'Asesoría técnica con I.T.O',
+        'Manual de montaje detallado',
+        'Garantía de materiales estructurales'
+      ]
+    },
+    premium: {
+      titulo: 'Panel Premium SIP', subtitulo: 'SIP + Volcanboard',
+      descripcion: 'Máxima eficiencia energética',
+      color: '#28a745', icono: '⭐', recomendada: true,
+      incluye: [
+        'Paneles SIP con aislación incluida',
+        'Certificado IDIEM al corte',
+        'Volcanboard 8mm ambas caras',
+        'Sistema de construcción rápida',
+        'Asesoría técnica especializada',
+        'Máxima eficiencia energética'
+      ]
+    },
+    estructural: {
+      titulo: 'Panel Metalcon', subtitulo: 'Metalcon + Volcanboard',
+      descripcion: 'Máxima resistencia sísmica',
+      color: '#0074D9', icono: '🔩',
+      incluye: [
+        'Estructura Steel Frame CINTAC',
+        'Volcanboard estructural 8mm',
+        'Sistema antisísmico reforzado',
+        'Perfiles galvanizados certificados',
+        'Certificación de resistencia sísmica',
+        'Garantía estructural extendida'
+      ]
+    }
+  };
 
   return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Cotización Prefabricadas Premium</title>
-    </head>
-    <body style="font-family: 'Montserrat', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>✅ Tu Cotización ${cotizacion.numero} - ${vendedor ? vendedor.nombre : 'Prefabricadas Premium'}</title>
       
-      <div style="text-align: center; background: linear-gradient(135deg, #8B5A3C 0%, #A67C52 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
-        <h1 style="margin: 0; font-size: 24px;">¡Tu Cotización Está Lista!</h1>
-        <p style="margin: 10px 0 0 0; opacity: 0.9;">Cotización #${cotizacion.numero}</p>
-      </div>
-
-      ${vendedorHTML}
-
-      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #8B5A3C; margin-top: 0;">📋 Resumen de tu Solicitud</h3>
-        <p><strong>Modelo:</strong> ${datos.modelo}</p>
-        <p><strong>Superficie total:</strong> ${m2Total}m²</p>
-        ${modelo ? `<p><strong>Dormitorios:</strong> ${modelo.dormitorios} | <strong>Baños:</strong> ${modelo.baños}</p>` : ''}
-        <p><strong>Habitaciones necesarias:</strong> ${datos.habitaciones}</p>
-        <p><strong>Sucursal cercana:</strong> ${datos.sucursal}</p>
-      </div>
-
-      <h3 style="color: #8B5A3C;">💰 Opciones de Precio</h3>
+      <!-- Pixel de tracking para vendedor freelance -->
+      <img src="https://api.sendgrid.com/v3/tracking/open.gif?cotizacion=${cotizacion.numero}&email=${encodeURIComponent(datos.correo)}&vendedor=${vendedor?.codigo || 'directo'}" width="1" height="1" style="display:none;">
       
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        ${preciosHTML}
-      </table>
-
-      <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107; margin: 20px 0;">
-        <h4 style="color: #856404; margin-top: 0;">⚠️ Información Importante</h4>
-        <ul style="margin: 10px 0; padding-left: 20px; color: #856404;">
-          <li>Precios referenciales sujetos a aprobación final</li>
-          <li>Vigencia: ${cotizacion.vigencia}</li>
-          <li>Valor UF utilizado: $${cotizacion.uf.valor.toLocaleString('es-CL')} (${cotizacion.uf.fecha})</li>
-          <li>Múltiples variantes disponibles para cada modelo</li>
-        </ul>
-      </div>
-
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${modelo ? `https://catalogo2025premium.netlify.app/${modelo.pdf}` : '#'}" 
-           style="background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: 600; display: inline-block; margin: 5px;">
-          📄 Ver Planta PDF
-        </a>
-      </div>
-
-      <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 30px 0;">
-        <h3 style="margin-top: 0;">🎉 ¡Siguiente Paso!</h3>
-        <p style="margin: 10px 0;">
-          ${cotizacion.vendedor ? 
-            `Tu asesor ${cotizacion.vendedor.nombre} se contactará contigo para validar esta cotización y responder todas tus consultas.` :
-            'Nuestro equipo se contactará contigo para validar esta cotización.'
+      <style>
+          /* RESET Y ESTILOS BASE */
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          
+          body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+              line-height: 1.5; 
+              color: #2C1810; 
+              background: #f5f5f5;
+              -webkit-text-size-adjust: 100%;
           }
-        </p>
-      </div>
-
-      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; color: #666; font-size: 14px;">
-        <p><strong>Prefabricadas Premium</strong></p>
-        <p>Tu casa soñada, construida con la más alta calidad y eficiencia energética</p>
-        <p>Email generado automáticamente • No responder a este correo</p>
-      </div>
-
-    </body>
-    </html>
+          
+          table { border-collapse: collapse; width: 100%; }
+          
+          .email-container { 
+              max-width: 600px; 
+              margin: 0 auto; 
+              background: white;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          }
+          
+          /* HEADER VENDEDOR FREELANCE */
+          .header { 
+              background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
+              color: white; 
+              text-align: center; 
+              padding: 40px 30px;
+              position: relative;
+          }
+          
+          .header::before {
+              content: '🤝';
+              position: absolute;
+              top: 15px;
+              right: 20px;
+              font-size: 24px;
+          }
+          
+          .header h1 { 
+              font-size: 28px; 
+              font-weight: 700; 
+              margin-bottom: 8px;
+          }
+          
+          .header .subtitle { 
+              font-size: 16px; 
+              opacity: 0.9;
+              margin-bottom: 20px;
+          }
+          
+          .cotizacion-badge {
+              background: rgba(255,255,255,0.2);
+              padding: 8px 20px;
+              border-radius: 20px;
+              font-size: 14px;
+              font-weight: 600;
+              display: inline-block;
+          }
+          
+          /* VENDEDOR INFO DESTACADA */
+          .vendedor-hero {
+              background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%);
+              border: 2px solid #007bff;
+              border-radius: 12px;
+              padding: 25px;
+              margin: 20px 0;
+              text-align: center;
+          }
+          
+          .vendedor-hero h3 {
+              color: #007bff;
+              font-size: 22px;
+              margin-bottom: 10px;
+              font-weight: 700;
+          }
+          
+          .vendedor-hero p {
+              color: #0056b3;
+              margin: 8px 0;
+              font-size: 16px;
+          }
+          
+          .vendedor-badge {
+              background: #007bff;
+              color: white;
+              padding: 6px 16px;
+              border-radius: 15px;
+              font-size: 14px;
+              font-weight: 600;
+              display: inline-block;
+              margin-top: 10px;
+          }
+          
+          /* SECCIONES */
+          .section {
+              padding: 30px;
+              border-bottom: 1px solid #f0f0f0;
+          }
+          
+          .section:last-child {
+              border-bottom: none;
+          }
+          
+          .section-title {
+              color: #8B5A3C;
+              font-size: 20px;
+              font-weight: 700;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          
+          /* INFORMACIÓN CLIENTE */
+          .cliente-info {
+              background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+              border-left: 4px solid #8B5A3C;
+              border-radius: 8px;
+              padding: 20px;
+          }
+          
+          .info-row {
+              display: flex;
+              justify-content: space-between;
+              padding: 8px 0;
+              border-bottom: 1px solid #f0f0f0;
+          }
+          
+          .info-row:last-child {
+              border-bottom: none;
+          }
+          
+          .info-label {
+              font-weight: 600;
+              color: #8B5A3C;
+              font-size: 14px;
+          }
+          
+          .info-value {
+              font-weight: 500;
+              color: #2C1810;
+              font-size: 14px;
+              text-align: right;
+          }
+          
+          /* MODELO SHOWCASE */
+          .modelo-card {
+              background: linear-gradient(135deg, #8B5A3C 0%, #A67C52 100%);
+              color: white;
+              text-align: center;
+              border-radius: 12px;
+              padding: 30px;
+              margin-bottom: 20px;
+          }
+          
+          .modelo-name {
+              font-size: 32px;
+              font-weight: 800;
+              margin-bottom: 10px;
+          }
+          
+          .modelo-description {
+              font-size: 16px;
+              opacity: 0.9;
+              margin-bottom: 25px;
+              font-style: italic;
+          }
+          
+          .specs-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+              gap: 15px;
+              margin: 20px 0;
+          }
+          
+          .spec-item {
+              background: rgba(255,255,255,0.2);
+              padding: 12px;
+              border-radius: 8px;
+              text-align: center;
+          }
+          
+          .spec-number {
+              font-size: 20px;
+              font-weight: 700;
+              display: block;
+          }
+          
+          .spec-label {
+              font-size: 12px;
+              opacity: 0.9;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+          }
+          
+          /* IMAGEN CASA */
+          .casa-imagen {
+              text-align: center;
+              margin: 25px 0;
+          }
+          
+          .casa-imagen img {
+              max-width: 100%;
+              height: auto;
+              border-radius: 12px;
+              box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+          }
+          
+          /* PRECIOS ATRACTIVOS */
+          .precio-card {
+              border: 2px solid #e9ecef;
+              border-radius: 12px;
+              padding: 25px;
+              margin-bottom: 20px;
+              position: relative;
+              text-align: left;
+              transition: all 0.3s ease;
+          }
+          
+          .precio-card.destacado {
+              border-color: #28a745;
+              background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+              transform: scale(1.02);
+          }
+          
+          .precio-card.destacado::before {
+              content: '⭐ RECOMENDADO';
+              position: absolute;
+              top: -12px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #28a745;
+              color: white;
+              padding: 6px 16px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: 700;
+          }
+          
+          .precio-titulo {
+              font-size: 18px;
+              font-weight: 700;
+              margin-bottom: 5px;
+              color: #8B5A3C;
+              text-align: center;
+          }
+          
+          .precio-subtitulo {
+              font-size: 14px;
+              color: #666;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          
+          .precio-valores {
+              text-align: center;
+              padding: 15px;
+              background: #f8f9fa;
+              border-radius: 8px;
+              margin-bottom: 20px;
+          }
+          
+          .precio-principal {
+              font-size: 28px;
+              font-weight: 800;
+              color: #8B5A3C;
+              margin-bottom: 5px;
+          }
+          
+          .precio-uf {
+              font-size: 16px;
+              color: #666;
+              margin-bottom: 10px;
+          }
+          
+          .precio-iva {
+              font-size: 14px;
+              color: #e74c3c;
+              font-weight: 600;
+          }
+          
+          /* INCLUYE */
+          .incluye-section {
+              margin-top: 20px;
+          }
+          
+          .incluye-titulo {
+              font-size: 16px;
+              font-weight: 700;
+              color: #8B5A3C;
+              margin-bottom: 12px;
+              text-align: center;
+          }
+          
+          .incluye-lista {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+          }
+          
+          .incluye-lista li {
+              padding: 6px 0 6px 20px;
+              font-size: 14px;
+              line-height: 1.4;
+              position: relative;
+              border-bottom: 1px solid #f0f0f0;
+          }
+          
+          .incluye-lista li:last-child {
+              border-bottom: none;
+          }
+          
+          .incluye-lista li::before {
+              content: '✓';
+              position: absolute;
+              left: 0;
+              color: #28a745;
+              font-weight: 900;
+              font-size: 14px;
+          }
+          
+          /* BOTONES */
+          .btn {
+              display: inline-block;
+              padding: 14px 28px;
+              border-radius: 8px;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 16px;
+              text-align: center;
+              transition: all 0.3s ease;
+              border: none;
+              cursor: pointer;
+          }
+          
+          .btn-primary {
+              background: #8B5A3C;
+              color: white;
+          }
+          
+          .btn-secondary {
+              background: #28a745;
+              color: white;
+          }
+          
+          .btn-whatsapp {
+              background: #25D366;
+              color: white;
+              font-size: 18px;
+              padding: 16px 32px;
+              border-radius: 10px;
+              display: block;
+              text-align: center;
+              margin: 20px 0;
+          }
+          
+          /* INFORMACIÓN IMPORTANTE */
+          .info-importante {
+              background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+              border: 2px solid #ffc107;
+              border-radius: 12px;
+              padding: 25px;
+              margin: 30px 0;
+              text-align: center;
+          }
+          
+          .info-importante h4 {
+              color: #856404;
+              margin-bottom: 15px;
+              font-weight: 700;
+          }
+          
+          .info-importante p {
+              color: #856404;
+              margin: 8px 0;
+              font-size: 14px;
+          }
+          
+          /* FOOTER VENDEDOR */
+          .footer {
+              background: #2C1810;
+              color: white;
+              padding: 30px;
+              text-align: center;
+          }
+          
+          .footer h3 {
+              margin-bottom: 15px;
+              font-size: 20px;
+          }
+          
+          .footer p {
+              margin: 5px 0;
+              opacity: 0.9;
+          }
+          
+          /* RESPONSIVE */
+          @media only screen and (max-width: 600px) {
+              .email-container {
+                  margin: 0;
+                  box-shadow: none;
+              }
+              
+              .section {
+                  padding: 20px;
+              }
+              
+              .header {
+                  padding: 30px 20px;
+              }
+              
+              .specs-grid {
+                  grid-template-columns: repeat(2, 1fr);
+              }
+              
+              .precio-principal {
+                  font-size: 24px;
+              }
+          }
+      </style>
+  </head>
+  <body>
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tr>
+              <td align="center" style="padding: 20px 10px;">
+                  <div class="email-container">
+                      
+                      <!-- HEADER FREELANCE -->
+                      <div class="header">
+                          <h1>${vendedor ? '🤝 Tu Asesor Personal' : '🏠 Prefabricadas Premium'}</h1>
+                          <div class="subtitle">${vendedor ? 'Red de Vendedores Freelance' : 'Tu Casa Soñada'}</div>
+                          <div class="cotizacion-badge">Cotización N° ${cotizacion.numero}</div>
+                      </div>
+                      
+                      <!-- INFO VENDEDOR FREELANCE -->
+                      ${vendedor ? `
+                      <div class="section">
+                          <div class="vendedor-hero">
+                              <h3>👋 ¡Hola ${datos.nombre.split(' ')[0]}!</h3>
+                              <p><strong>Soy ${vendedor.nombre}</strong></p>
+                              <p>Tu asesor personal en casas prefabricadas</p>
+                              <p>📍 ${vendedor.region} - ${vendedor.ciudad}</p>
+                              <div class="vendedor-badge">Código: ${vendedor.codigo}</div>
+                          </div>
+                          <div style="text-align: center; color: #666; font-size: 14px; margin-top: 15px;">
+                              ✨ <strong>Atención personalizada garantizada</strong> - Te acompaño en todo el proceso
+                          </div>
+                      </div>
+                      ` : ''}
+                      
+                      <!-- INFORMACIÓN DEL CLIENTE -->
+                      <div class="section">
+                          <h3 class="section-title">📋 Detalles de tu Cotización</h3>
+                          <div class="cliente-info">
+                              <div class="info-row">
+                                  <span class="info-label">Cotización</span>
+                                  <span class="info-value">${cotizacion.numero}</span>
+                              </div>
+                              <div class="info-row">
+                                  <span class="info-label">Modelo Seleccionado</span>
+                                  <span class="info-value">${datos.modelo}</span>
+                              </div>
+                              <div class="info-row">
+                                  <span class="info-label">Habitaciones necesarias</span>
+                                  <span class="info-value">${datos.habitaciones || 'No especificado'}</span>
+                              </div>
+                              <div class="info-row">
+                                  <span class="info-label">Válida hasta</span>
+                                  <span class="info-value">${cotizacion.vigencia}</span>
+                              </div>
+                              ${vendedor ? `
+                              <div class="info-row">
+                                  <span class="info-label">Tu asesor</span>
+                                  <span class="info-value">${vendedor.nombre}</span>
+                              </div>
+                              ` : ''}
+                          </div>
+                          
+                          <!-- IMAGEN DE LA CASA -->
+                          <div class="casa-imagen">
+                              <img src="https://premiumfreelance.netlify.app/${cotizacion.modelo_info?.imagen || 'modelos/default.jpg'}" 
+                                   alt="Casa modelo ${datos.modelo}" 
+                                   style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
+                              <p style="margin-top: 10px; font-size: 13px; color: #666; text-align: center; font-style: italic;">
+                                  Vista exterior del modelo ${datos.modelo}
+                              </p>
+                          </div>
+                      </div>
+                      
+                      <!-- MODELO -->
+                      <div class="section">
+                          <div class="modelo-card">
+                              <div class="modelo-name">${datos.modelo}</div>
+                              <div class="modelo-description">${cotizacion.modelo_info?.descripcion || 'Casa diseñada con los más altos estándares de calidad'}</div>
+                              
+                              <div class="specs-grid">
+                                  <div class="spec-item">
+                                      <span class="spec-number">${cotizacion.modelo_info?.dormitorios || 'N/A'}</span>
+                                      <span class="spec-label">Dormitorios</span>
+                                  </div>
+                                  <div class="spec-item">
+                                      <span class="spec-number">${cotizacion.modelo_info?.baños || 'N/A'}</span>
+                                      <span class="spec-label">Baños</span>
+                                  </div>
+                                  <div class="spec-item">
+                                      <span class="spec-number">${cotizacion.modelo_info?.m2_total || 'N/A'}</span>
+                                      <span class="spec-label">m² Totales</span>
+                                  </div>
+                                  <div class="spec-item">
+                                      <span class="spec-number">${cotizacion.modelo_info?.m2_utiles || 'N/A'}</span>
+                                      <span class="spec-label">m² Útiles</span>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <!-- BOTONES DE DESCARGA -->
+                          <div style="text-align: center;">
+                              <a href="${pdfUrl}" class="btn btn-primary" target="_blank">
+                                  📄 Descargar Planta Técnica
+                              </a>
+                          </div>
+                      </div>
+                      
+                      <!-- BROCHURE -->
+                      <div class="section">
+                          <div style="background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%); border: 2px solid #28a745; border-radius: 12px; padding: 25px; text-align: center;">
+                              <h4 style="color: #155724; margin-bottom: 10px;">📋 Información Corporativa</h4>
+                              <p style="color: #155724; margin-bottom: 20px;">Descarga nuestro brochure completo con plantas de producción, certificaciones y galería de proyectos.</p>
+                              <a href="${brochureUrl}" class="btn btn-secondary" target="_blank">
+                                  Ver Brochure Completo
+                              </a>
+                          </div>
+                      </div>
+                      
+                      <!-- PRECIOS -->
+                      <div class="section">
+                          <h3 class="section-title">💰 Opciones de Construcción</h3>
+                          
+                          ${preciosOrdenados.map(precio => {
+                            const opcion = OPCIONES_EMAIL[precio.tipo];
+                            if (!opcion) return '';
+                            
+                            return `
+                              <div class="precio-card ${opcion.recomendada ? 'destacado' : ''}">
+                                  <div class="precio-titulo">${opcion.icono} ${opcion.titulo}</div>
+                                  <div class="precio-subtitulo">${opcion.subtitulo}</div>
+                                  
+                                  <div class="precio-valores">
+                                      <div class="precio-principal">$${precio.clp.toLocaleString('es-CL')}</div>
+                                      <div class="precio-uf">${precio.uf} UF</div>
+                                      <div class="precio-iva">+ IVA</div>
+                                  </div>
+                                  
+                                  <div class="incluye-section">
+                                      <div class="incluye-titulo">✨ Esta Opción Incluye:</div>
+                                      <ul class="incluye-lista">
+                                          ${opcion.incluye.map(item => `<li>${item}</li>`).join('')}
+                                      </ul>
+                                  </div>
+                              </div>
+                            `;
+                          }).join('')}
+                          
+                          <!-- INFORMACIÓN IMPORTANTE -->
+                          <div class="info-importante">
+                              <h4>⚠️ Información Importante</h4>
+                              <p><strong>Estos precios son referenciales y están sujetos a evaluación final.</strong></p>
+                              <p><strong>Deben ser aprobados ${vendedor ? `por ${vendedor.nombre}` : 'por un agente de ventas'}</strong> de Prefabricadas Premium.</p>
+                              <p><em>Los precios finales pueden variar según especificaciones del terreno y proyecto.</em></p>
+                          </div>
+                      </div>
+                      
+                      <!-- UF Y VIGENCIA -->
+                      <div class="section">
+                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                              <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center;">
+                                  <h5 style="color: #8B5A3C; font-size: 14px; margin-bottom: 5px;">Valor UF</h5>
+                                  <div style="font-size: 18px; font-weight: 700; color: #2C1810;">$${cotizacion.uf.valor.toLocaleString('es-CL')}</div>
+                                  <small>${cotizacion.uf.fecha}</small>
+                              </div>
+                              <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center;">
+                                  <h5 style="color: #8B5A3C; font-size: 14px; margin-bottom: 5px;">Vigencia</h5>
+                                  <div style="font-size: 18px; font-weight: 700; color: #2C1810;">${cotizacion.vigencia}</div>
+                                  <small>15 días corridos</small>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- CTA WHATSAPP VENDEDOR -->
+                      <div class="section">
+                          <h3 class="section-title">¿Listo para el siguiente paso?</h3>
+                          <div style="text-align: center;">
+                              <p style="margin-bottom: 20px; color: #666;">
+                                  ${vendedor ? 
+                                    `Conecta directamente con <strong>${vendedor.nombre}</strong>` :
+                                    'Conecta con nuestro especialista'
+                                  }
+                              </p>
+                              <a href="${whatsappUrl}" class="btn-whatsapp" target="_blank">
+                                  💬 Chatear por WhatsApp
+                              </a>
+                              <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                                  📱 ${whatsappTelefono.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '+$1 $2 $3 $4')}
+                              </p>
+                              <p style="font-size: 13px; color: #999;">
+                                  ${vendedor ? 
+                                    `${vendedor.nombre} te responderá personalmente` :
+                                    'Respuesta garantizada en menos de 2 horas hábiles'
+                                  }
+                              </p>
+                          </div>
+                      </div>
+                      
+                      <!-- FOOTER VENDEDOR -->
+                      <div class="footer">
+                          <h3>${vendedor ? `${vendedor.nombre} - Prefabricadas Premium` : 'Prefabricadas Premium'}</h3>
+                          <p><strong>${vendedor ? 'Tu asesor personal en casas prefabricadas' : 'Construyendo sueños, creando hogares'}</strong></p>
+                          ${vendedor ? `
+                          <p>📍 ${vendedor.region} - ${vendedor.ciudad}</p>
+                          <p>📱 ${whatsappTelefono.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '+$1 $2 $3 $4')}</p>
+                          <p>👤 Código de vendedor: ${vendedor.codigo}</p>
+                          ` : ''}
+                          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; font-size: 12px; opacity: 0.7;">
+                              <p>Cotización: ${cotizacion.fecha} | UF: $${cotizacion.uf.valor.toLocaleString('es-CL')}</p>
+                              ${vendedor ? `<p>Atención personalizada por ${vendedor.nombre} - Red Freelance</p>` : ''}
+                          </div>
+                      </div>
+                      
+                  </div>
+              </td>
+          </tr>
+      </table>
+  </body>
+  </html>
   `;
 }
