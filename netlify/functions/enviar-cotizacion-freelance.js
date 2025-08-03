@@ -1,12 +1,11 @@
 // netlify/functions/enviar-cotizacion-freelance.js
-// Versión SIN dependencias problemáticas - Google Sheets temporalmente deshabilitado
+// Versión COMPLETA con Google Sheets usando APIs REST
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// COMENTADO TEMPORALMENTE: Google Sheets API para tracking
-// const { GoogleSpreadsheet } = require('google-spreadsheet');
-// const { JWT } = require('google-auth-library');
+// Importar funciones de Google Sheets REST
+const { registrarCotizacionEnGoogleSheets } = require('./google-sheets-utils');
 
 // Configuración
 let valorUF = 37500; // Valor de respaldo
@@ -175,7 +174,7 @@ const tarifas = {
   'METALCON_VOLCANBOARD': { util: 4.6, terraza: 2, entrepiso: 1.72, logia: 3 }
 };
 
-// NUEVA: Función para calcular m2 totales (sin entrepiso)
+// Función para calcular m2 totales (sin entrepiso)
 function calcularM2Totales(modelo) {
   return (modelo.m2_utiles || 0) + (modelo.m2_terraza || 0) + (modelo.logia || 0);
 }
@@ -355,29 +354,6 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
   return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
 }
 
-// COMENTADO TEMPORALMENTE: Función para registrar en Google Sheets
-async function registrarEnGoogleSheets(datos, cotizacion) {
-  try {
-    console.log('📊 Google Sheets temporalmente deshabilitado');
-    console.log('🔧 Datos que se registrarían:', {
-      cotizacion: cotizacion.numero,
-      cliente: datos.nombre,
-      email: datos.correo,
-      modelo: datos.modelo,
-      vendedor: datos.vendedor?.nombre || 'Sin vendedor'
-    });
-    
-    // TODO: Implementar cuando resolvamos las dependencias
-    // Por ahora solo loggeamos los datos
-    
-    return true; // Simular éxito
-
-  } catch (error) {
-    console.error('❌ Error en Google Sheets (deshabilitado):', error);
-    return false;
-  }
-}
-
 // Función principal
 exports.handler = async (event, context) => {
   const headers = {
@@ -448,7 +424,6 @@ exports.handler = async (event, context) => {
     const vigencia = new Date();
     vigencia.setDate(vigencia.getDate() + 15);
     
-    // CORREGIDO: Agregar m2_total al modelo_info
     const modeloConM2Total = {
       ...modelo,
       m2_total: calcularM2Totales(modelo)
@@ -476,7 +451,6 @@ exports.handler = async (event, context) => {
         from: 'cotizacion@prefabricadaspremium.cl',
         subject: `Cotización #${numeroCotizacion} - ${datos.modelo} - Prefabricadas Premium`,
         html: emailHTML,
-        // NUEVO: Parámetros de tracking para SendGrid
         categories: ['cotizacion', 'freelance'],
         custom_args: {
           cotizacion: numeroCotizacion,
@@ -508,11 +482,12 @@ exports.handler = async (event, context) => {
       console.error('⚠️ Error al enviar email:', emailError);
     }
 
-    // MODIFICADO: Registrar en Google Sheets (temporalmente deshabilitado)
+    // NUEVO: Registrar en Google Sheets usando APIs REST
     try {
-      const sheetRegistrado = await registrarEnGoogleSheets(datos, cotizacion);
+      console.log('📊 Registrando en Google Sheets con APIs REST...');
+      const sheetRegistrado = await registrarCotizacionEnGoogleSheets(datos, cotizacion);
       if (sheetRegistrado) {
-        console.log('📊 Lead registrado exitosamente (modo simulación)');
+        console.log('✅ Lead registrado exitosamente en Google Sheets:', numeroCotizacion);
       }
     } catch (sheetError) {
       console.error('⚠️ Error al registrar en Google Sheets:', sheetError);
@@ -528,8 +503,7 @@ exports.handler = async (event, context) => {
         vendedor: datos.vendedor ? datos.vendedor.nombre : null,
         message: datos.vendedor ? 
           `Cotización enviada. Serás contactado por ${datos.vendedor.nombre}` :
-          'Cotización enviada correctamente',
-        nota: 'Google Sheets temporalmente deshabilitado - Solo tracking por email activo'
+          'Cotización enviada correctamente'
       })
     };
 
@@ -548,7 +522,7 @@ exports.handler = async (event, context) => {
   }
 };
 
-// FUNCIÓN DE EMAIL COMPLETA (sin cambios)
+// FUNCIÓN DE EMAIL COMPLETA
 function generarEmailCotizacion(datos, cotizacion) {
   const preciosOrdenados = ['economica', 'premium', 'estructural'].map(tipo => {
     if (cotizacion.precios[tipo]) {
@@ -1132,7 +1106,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                               ` : ''}
                           </div>
                           
-                          <!-- IMAGEN DE LA CASA CORREGIDA -->
+                          <!-- IMAGEN DE LA CASA -->
                           <div class="casa-imagen">
                               <img src="https://premiumfreelance.netlify.app/${cotizacion.modelo_info?.imagen || 'modelos/default.jpg'}" 
                                    alt="Casa modelo ${datos.modelo}" 
@@ -1144,7 +1118,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                           </div>
                       </div>
                       
-                      <!-- MODELO CON M2 TOTALES CORREGIDOS -->
+                      <!-- MODELO CON M2 TOTALES -->
                       <div class="section">
                           <div class="modelo-card">
                               <div class="modelo-name">${datos.modelo}</div>
@@ -1188,7 +1162,7 @@ function generarEmailCotizacion(datos, cotizacion) {
                           </div>
                       </div>
                       
-                      <!-- PREGUNTAS FRECUENTES - ACTUALIZADO -->
+                      <!-- PREGUNTAS FRECUENTES -->
                       <div class="section">
                           <div class="faq-section">
                               <h3 class="faq-title">❓ Preguntas Frecuentes</h3>

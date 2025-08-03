@@ -1,5 +1,8 @@
 // netlify/functions/sendgrid-webhook.js
-// Webhook para SendGrid - Versión funcional sin dependencias problemáticas
+// Webhook para SendGrid CON Google Sheets usando APIs REST
+
+// Importar función de Google Sheets REST
+const { actualizarMetricasEmailEnSheets } = require('./google-sheets-utils');
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -24,7 +27,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('🚀 Webhook iniciado');
+    console.log('🚀 Webhook SendGrid iniciado');
     console.log('📨 Headers recibidos:', JSON.stringify(event.headers, null, 2));
     
     // Parsear eventos de SendGrid
@@ -47,6 +50,7 @@ exports.handler = async (event, context) => {
 
     // Procesar cada evento
     let procesados = 0;
+    let actualizadosEnSheets = 0;
     const eventosDetalles = [];
 
     for (const evento of eventos) {
@@ -81,9 +85,20 @@ exports.handler = async (event, context) => {
           eventosDetalles.push(eventoInfo);
           procesados++;
           
-          // Aquí podríamos agregar la lógica de Google Sheets más adelante
-          // Por ahora solo loggeamos y confirmamos recepción
-          console.log(`✅ Evento procesado correctamente: ${JSON.stringify(eventoInfo, null, 2)}`);
+          // NUEVO: Actualizar Google Sheets usando APIs REST
+          try {
+            console.log(`📊 Actualizando Google Sheets para evento: ${evento.event}`);
+            const actualizado = await actualizarMetricasEmailEnSheets(evento);
+            if (actualizado) {
+              actualizadosEnSheets++;
+              console.log(`✅ Google Sheets actualizado para ${eventoInfo.cotizacion}: ${evento.event}`);
+            } else {
+              console.log(`⚠️ No se pudo actualizar Google Sheets para ${eventoInfo.cotizacion}`);
+            }
+          } catch (sheetError) {
+            console.error(`❌ Error actualizando Google Sheets:`, sheetError);
+          }
+          
         } else {
           console.log(`⏭️ Evento omitido (no es de cotización): ${evento.event}`);
         }
@@ -101,7 +116,7 @@ exports.handler = async (event, context) => {
     );
 
     console.log(`🔧 Configuración Google Sheets: ${configCompleta ? 'COMPLETA' : 'INCOMPLETA'}`);
-    console.log(`✅ Webhook completado. Total procesados: ${procesados}/${eventos.length}`);
+    console.log(`✅ Webhook completado. Procesados: ${procesados}/${eventos.length}, Sheets actualizados: ${actualizadosEnSheets}`);
 
     // Respuesta exitosa
     return {
@@ -111,6 +126,7 @@ exports.handler = async (event, context) => {
         success: true,
         mensaje: 'Webhook procesado correctamente',
         procesados: procesados,
+        actualizadosEnSheets: actualizadosEnSheets,
         total: eventos.length,
         eventos: eventosDetalles,
         timestamp: new Date().toISOString(),
