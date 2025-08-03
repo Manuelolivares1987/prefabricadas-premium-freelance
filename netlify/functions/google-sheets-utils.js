@@ -194,9 +194,10 @@ async function appendRowToSheet(spreadsheetId, sheetName, values, accessToken) {
 }
 
 // Función para actualizar fila específica
+// Función para actualizar fila específica - VERSIÓN CORREGIDA
 async function updateSheetRow(spreadsheetId, sheetName, rowIndex, values, accessToken) {
   const range = `${sheetName}!A${rowIndex}:ZZ${rowIndex}`;
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?valueInputOption=RAW`;
   
   try {
     const response = await fetch(url, {
@@ -208,18 +209,21 @@ async function updateSheetRow(spreadsheetId, sheetName, rowIndex, values, access
       body: JSON.stringify({
         range: range,
         majorDimension: 'ROWS',
-        values: [values],
-        valueInputOption: 'RAW',
+        values: [values]
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Error actualizando fila: ${response.status}`);
+      const errorData = await response.text();
+      console.error(`❌ Detalles del error ${response.status}:`, errorData);
+      throw new Error(`Error actualizando fila: ${response.status} - ${errorData}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log(`✅ Fila ${rowIndex} actualizada correctamente`);
+    return result;
   } catch (error) {
-    console.error('Error actualizando fila:', error);
+    console.error('❌ Error actualizando fila:', error);
     throw error;
   }
 }
