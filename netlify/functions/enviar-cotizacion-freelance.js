@@ -1,12 +1,12 @@
 // netlify/functions/enviar-cotizacion-freelance.js
-// Versión con Google Sheets tracking y SendGrid webhooks
+// Versión SIN dependencias problemáticas - Google Sheets temporalmente deshabilitado
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// NUEVO: Google Sheets API para tracking
-const { GoogleSpreadsheet } = require('google-spreadsheet');
-const { JWT } = require('google-auth-library');
+// COMENTADO TEMPORALMENTE: Google Sheets API para tracking
+// const { GoogleSpreadsheet } = require('google-spreadsheet');
+// const { JWT } = require('google-auth-library');
 
 // Configuración
 let valorUF = 37500; // Valor de respaldo
@@ -355,148 +355,25 @@ function generarWhatsAppURL(datos, cotizacion, vendedor) {
   return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
 }
 
-// NUEVA: Función para registrar en Google Sheets
+// COMENTADO TEMPORALMENTE: Función para registrar en Google Sheets
 async function registrarEnGoogleSheets(datos, cotizacion) {
   try {
-    const SHEET_ID = process.env.GOOGLE_SHEET_ID;
-    const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-
-    if (!SHEET_ID || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
-      console.warn('⚠️ Configuración de Google Sheets incompleta');
-      return false;
-    }
-
-    const serviceAccountAuth = new JWT({
-      email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      key: GOOGLE_PRIVATE_KEY,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    console.log('📊 Google Sheets temporalmente deshabilitado');
+    console.log('🔧 Datos que se registrarían:', {
+      cotizacion: cotizacion.numero,
+      cliente: datos.nombre,
+      email: datos.correo,
+      modelo: datos.modelo,
+      vendedor: datos.vendedor?.nombre || 'Sin vendedor'
     });
-
-    const doc = new GoogleSpreadsheet(SHEET_ID, serviceAccountAuth);
-    await doc.loadInfo();
-
-    let sheet = doc.sheetsByTitle['Cotizaciones Freelance'];
-    if (!sheet) {
-      sheet = await doc.addSheet({ 
-        title: 'Cotizaciones Freelance',
-        headerValues: [
-          'Fecha/Hora',
-          'N° Cotización',
-          'Nombre Cliente',
-          'Email Cliente', 
-          'Teléfono Cliente',
-          'Modelo Solicitado',
-          'Habitaciones Necesarias',
-          'Sucursal Cercana',
-          'M2 Útiles',
-          'M2 Terraza',
-          'M2 Totales',
-          'Dormitorios',
-          'Baños',
-          'Precio Económica (CLP)',
-          'Precio Premium (CLP)',
-          'Precio Estructural (CLP)',
-          'Precio Económica (UF)',
-          'Precio Premium (UF)',
-          'Precio Estructural (UF)',
-          'Valor UF',
-          'Vigencia',
-          'Interesado en Financiar',
-          'Monto Financiamiento',
-          'RUT Cliente',
-          'Comentarios',
-          'Vendedor Freelance',
-          'Código Vendedor',
-          'Región Vendedor',
-          'Ciudad Vendedor',
-          'Teléfono Vendedor',
-          'Tipo Lead',
-          'Estado',
-          'Notas Internas',
-          // Columnas de tracking de email
-          'Email Entregado',
-          'Fecha Entrega Email',
-          'Aperturas Email',
-          'Primera Apertura',
-          'Última Apertura',
-          'Clicks Email',
-          'Primer Click',
-          'Último Click',
-          'URL Clickeada',
-          'Email Rebotado',
-          'Motivo Rebote',
-          'Email Descartado',
-          'Motivo Descarte',
-          'Marcado Spam',
-          'Desuscrito'
-        ]
-      });
-    }
-
-    const modeloInfo = cotizacion.modelo_info;
-    const vendedor = datos.vendedor;
-    const precios = cotizacion.precios;
-
-    const fila = {
-      'Fecha/Hora': new Date().toLocaleString('es-CL'),
-      'N° Cotización': cotizacion.numero,
-      'Nombre Cliente': datos.nombre || '',
-      'Email Cliente': datos.correo || '',
-      'Teléfono Cliente': datos.telefono || '',
-      'Modelo Solicitado': datos.modelo || '',
-      'Habitaciones Necesarias': datos.habitaciones || '',
-      'Sucursal Cercana': datos.sucursal || '',
-      'M2 Útiles': modeloInfo?.m2_utiles || '',
-      'M2 Terraza': modeloInfo?.m2_terraza || '',
-      'M2 Totales': modeloInfo?.m2_total || '',
-      'Dormitorios': modeloInfo?.dormitorios || '',
-      'Baños': modeloInfo?.baños || '',
-      'Precio Económica (CLP)': precios?.economica?.clp || '',
-      'Precio Premium (CLP)': precios?.premium?.clp || '',
-      'Precio Estructural (CLP)': precios?.estructural?.clp || '',
-      'Precio Económica (UF)': precios?.economica?.uf || '',
-      'Precio Premium (UF)': precios?.premium?.uf || '',
-      'Precio Estructural (UF)': precios?.estructural?.uf || '',
-      'Valor UF': cotizacion.uf?.valor || '',
-      'Vigencia': cotizacion.vigencia || '',
-      'Interesado en Financiar': datos.financia === 'si' ? 'SÍ' : 'NO',
-      'Monto Financiamiento': datos.monto || '',
-      'RUT Cliente': datos.rut || '',
-      'Comentarios': datos.comentario || '',
-      'Vendedor Freelance': vendedor?.nombre || '',
-      'Código Vendedor': vendedor?.codigo || '',
-      'Región Vendedor': vendedor?.region || '',
-      'Ciudad Vendedor': vendedor?.ciudad || '',
-      'Teléfono Vendedor': vendedor?.telefono || '',
-      'Tipo Lead': 'Freelance',
-      'Estado': 'Nuevo',
-      'Notas Internas': '',
-      // Campos de tracking de email inicializados
-      'Email Entregado': 'Pendiente',
-      'Fecha Entrega Email': '',
-      'Aperturas Email': '0',
-      'Primera Apertura': '',
-      'Última Apertura': '',
-      'Clicks Email': '0',
-      'Primer Click': '',
-      'Último Click': '',
-      'URL Clickeada': '',
-      'Email Rebotado': 'NO',
-      'Motivo Rebote': '',
-      'Email Descartado': 'NO',
-      'Motivo Descarte': '',
-      'Marcado Spam': 'NO',
-      'Desuscrito': 'NO'
-    };
-
-    await sheet.addRow(fila);
     
-    console.log('✅ Datos registrados en Google Sheets:', cotizacion.numero);
-    return true;
+    // TODO: Implementar cuando resolvamos las dependencias
+    // Por ahora solo loggeamos los datos
+    
+    return true; // Simular éxito
 
   } catch (error) {
-    console.error('❌ Error al registrar en Google Sheets:', error);
+    console.error('❌ Error en Google Sheets (deshabilitado):', error);
     return false;
   }
 }
@@ -631,11 +508,11 @@ exports.handler = async (event, context) => {
       console.error('⚠️ Error al enviar email:', emailError);
     }
 
-    // NUEVO: Registrar en Google Sheets para tracking
+    // MODIFICADO: Registrar en Google Sheets (temporalmente deshabilitado)
     try {
       const sheetRegistrado = await registrarEnGoogleSheets(datos, cotizacion);
       if (sheetRegistrado) {
-        console.log('📊 Lead registrado en Google Sheets:', numeroCotizacion);
+        console.log('📊 Lead registrado exitosamente (modo simulación)');
       }
     } catch (sheetError) {
       console.error('⚠️ Error al registrar en Google Sheets:', sheetError);
@@ -651,7 +528,8 @@ exports.handler = async (event, context) => {
         vendedor: datos.vendedor ? datos.vendedor.nombre : null,
         message: datos.vendedor ? 
           `Cotización enviada. Serás contactado por ${datos.vendedor.nombre}` :
-          'Cotización enviada correctamente'
+          'Cotización enviada correctamente',
+        nota: 'Google Sheets temporalmente deshabilitado - Solo tracking por email activo'
       })
     };
 
@@ -670,7 +548,7 @@ exports.handler = async (event, context) => {
   }
 };
 
-// FUNCIÓN DE EMAIL CORREGIDA CON FAQ Y M2 TOTALES
+// FUNCIÓN DE EMAIL COMPLETA (sin cambios)
 function generarEmailCotizacion(datos, cotizacion) {
   const preciosOrdenados = ['economica', 'premium', 'estructural'].map(tipo => {
     if (cotizacion.precios[tipo]) {
