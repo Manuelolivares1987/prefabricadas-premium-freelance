@@ -163,8 +163,9 @@ async function createSheetIfNotExists(spreadsheetId, sheetName, headers, accessT
 }
 
 // Función para agregar fila a una hoja
+// Función para agregar fila a una hoja - VERSIÓN CORREGIDA
 async function appendRowToSheet(spreadsheetId, sheetName, values, accessToken) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}:append`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
   
   try {
     const response = await fetch(url, {
@@ -176,9 +177,7 @@ async function appendRowToSheet(spreadsheetId, sheetName, values, accessToken) {
       body: JSON.stringify({
         range: sheetName,
         majorDimension: 'ROWS',
-        values: [values],
-        insertDataOption: 'INSERT_ROWS',
-        valueInputOption: 'RAW',
+        values: [values]
       }),
     });
 
