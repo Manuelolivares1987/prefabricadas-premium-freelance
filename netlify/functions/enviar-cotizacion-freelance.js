@@ -4,6 +4,13 @@
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+// Función para fechas en zona horaria de Chile
+function obtenerSoloFechaChile() {
+  return new Date().toLocaleDateString('es-CL', {
+    timeZone: 'America/Santiago'
+  });
+}
+
 // Importar funciones de Google Sheets REST
 const { registrarCotizacionEnGoogleSheets } = require('./google-sheets-utils');
 
@@ -237,7 +244,7 @@ async function obtenerValorUF() {
   
   return {
     valor: valorUF,
-    fecha: new Date().toLocaleDateString('es-CL')
+    fecha: obtenerSoloFechaChile(),
   };
 }
 
@@ -435,7 +442,7 @@ exports.handler = async (event, context) => {
       modelo_info: modeloConM2Total,
       precios: precios,
       uf: ufInfo,
-      vigencia: vigencia.toLocaleDateString('es-CL'),
+      vigencia: vigencia.toLocaleDateString('es-CL', { timeZone: 'America/Santiago' }),
       fecha: new Date().toLocaleDateString('es-CL'),
       vendedor: datos.vendedor || null
     };

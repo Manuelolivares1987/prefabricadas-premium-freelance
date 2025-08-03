@@ -2,6 +2,22 @@
 // Funciones para Google Sheets usando APIs REST directas
 // Sin dependencias problemáticas - Solo fetch() nativo
 
+
+// Función para obtener fecha/hora en zona horaria de Chile
+function obtenerFechaChile(timestamp = null) {
+  const fecha = timestamp ? new Date(timestamp * 1000) : new Date();
+  return fecha.toLocaleString('es-CL', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: '2-digit', 
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+}
+
 // Función para crear JWT token manualmente
 function createJWT(serviceAccountEmail, privateKey, scopes) {
   const header = {
@@ -267,7 +283,7 @@ async function registrarCotizacionEnGoogleSheets(datos, cotizacion) {
     const precios = cotizacion.precios;
 
     const fila = [
-      new Date().toLocaleString('es-CL'), // Fecha/Hora
+      obtenerFechaChile(), // Fecha/Hora
       cotizacion.numero, // N° Cotización
       datos.nombre || '', // Nombre Cliente
       datos.correo || '', // Email Cliente
@@ -361,7 +377,7 @@ async function actualizarMetricasEmailEnSheets(evento) {
     const info = {
       numeroCotizacion: evento.unique_args?.cotizacion || 'N/A',
       email: evento.email,
-      timestamp: new Date(evento.timestamp * 1000).toLocaleString('es-CL')
+      timestamp: obtenerFechaChile(evento.timestamp)
     };
 
     // Buscar la fila correspondiente
