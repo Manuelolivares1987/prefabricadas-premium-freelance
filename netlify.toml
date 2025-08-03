@@ -10,7 +10,7 @@
   directory = "netlify/functions"
   
   # Configuración de runtime para las funciones
-  node_bundler = "esbuild"
+  node_bundler = "zisi"
 
 # Redirecciones y configuración de headers
 [[headers]]
